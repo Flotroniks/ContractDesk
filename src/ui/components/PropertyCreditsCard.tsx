@@ -25,7 +25,7 @@ const CREDIT_TYPES = ["Amortissable", "In Fine", "Relais", "PTZ", "Refinancement
  */
 export function PropertyCreditsCard({ electron, properties, userId, selectedPropertyId, onSelectProperty }: PropertyCreditsCardProps) {
     const [propertyId, setPropertyId] = useState<number | null>(selectedPropertyId ?? null);
-    const firstFieldRef = useRef<HTMLInputElement | null>(null);
+    const firstFieldRef = useRef<HTMLSelectElement | null>(null);
     const selectedProperty = useMemo(() => properties.find((p) => p.id === propertyId) ?? null, [properties, propertyId]);
 
     const {

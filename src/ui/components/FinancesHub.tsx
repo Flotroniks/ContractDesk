@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type RefObject } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation, type TFunction } from "react-i18next";
 /* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import type { ElectronApi, Property } from "../types";
 import { useFinancialDashboard } from "../hooks/useFinancialDashboard";
@@ -421,7 +421,7 @@ function StatCard({ label, value, suffix, tone }: StatCardProps) {
     );
 }
 
-function StatusBadge({ income, expected, t }: { income: number; expected: number; t: (key: string) => string }) {
+function StatusBadge({ income, expected, t }: { income: number; expected: number; t: TFunction<"translation", undefined> }) {
     const status = computePaymentStatus(income, expected);
     const tone = status === "paid" ? "bg-emerald-50 text-emerald-700 border-emerald-100" : status === "partial" ? "bg-amber-50 text-amber-700 border-amber-100" : "bg-red-50 text-red-700 border-red-100";
     const label =
@@ -439,7 +439,7 @@ function CategoryBreakdownCards({
     t,
 }: {
     breakdown: Array<{ category: string; total: number }>;
-    t: (key: string, options?: Record<string, unknown>) => string;
+    t: TFunction<"translation", undefined>;
 }) {
     return (
         <div className="space-y-2">
@@ -469,7 +469,7 @@ function MonthDetailModal({
     expenses: ExpensesProps["expenses"];
     cashflow: { income: number; expenses: number; credit: number; cashflow: number } | null;
     onClose: () => void;
-    t: (key: string, options?: Record<string, unknown>) => string;
+    t: TFunction<"translation", undefined>;
 }) {
     const incomeTotal = incomes.reduce((sum, i) => sum + (i.amount ?? 0), 0);
     const expenseTotal = expenses.reduce((sum, e) => sum + (e.amount ?? 0), 0);
@@ -529,7 +529,7 @@ function MonthList({
     title: string;
     rows: Array<{ date: string; amount: number; category?: string | null; description?: string | null; payment_method?: string | null }>;
     type: "income" | "expense";
-    t: (key: string, options?: Record<string, unknown>) => string;
+    t: TFunction<"translation", undefined>;
 }) {
     return (
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-3">
@@ -587,7 +587,7 @@ function computePaymentStatus(income: number, expected: number): "paid" | "parti
 
 type ExpensesProps = ReturnType<typeof useExpenses> & {
     onAmountChange: (value: string) => void;
-    amountInputRef?: RefObject<HTMLInputElement>;
+    amountInputRef?: RefObject<HTMLInputElement | null>;
 };
 
 function ExpensesPanel({
@@ -763,7 +763,7 @@ function ExpensesPanel({
 
 type IncomesProps = ReturnType<typeof useIncomes> & {
     onAmountChange: (value: string) => void;
-    amountInputRef?: RefObject<HTMLInputElement>;
+    amountInputRef?: RefObject<HTMLInputElement | null>;
 };
 
 function IncomesPanel({ incomes, loading, saving, error, form, setForm, editingId, startEdit, submitIncome, deleteIncome, totals, onAmountChange, amountInputRef }: IncomesProps) {

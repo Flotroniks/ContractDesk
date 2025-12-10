@@ -93,8 +93,8 @@ export function VacancyChart({ data, colorScale, vacancyLabel }: Props) {
             .attr("height", (d) => innerHeight - y(d.stat.vacancy))
             .attr("fill", (d) => colorScale(d.propertyId))
             .attr("rx", 3)
-            .on("mouseenter", function (event, d) {
-                showTooltip(event as unknown as MouseEvent, d.stat, d.propertyName);
+            .on("mouseenter", (event: MouseEvent, d: { propertyId: number; propertyName: string; stat: MonthlyStat }) => {
+                showTooltip(event, d.stat, d.propertyName);
             })
             .on("mouseleave", hideTooltip);
 

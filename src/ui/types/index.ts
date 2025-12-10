@@ -8,15 +8,15 @@ export type Property = {
     id: number;
     user_id: number;
     name: string;
-    address?: string;
-    city_id?: number;
-    region_id?: number;
-    country_id?: number;
-    department_id?: number;
-    type?: string;
-    surface?: number;
-    base_rent?: number;
-    base_charges?: number;
+    address?: string | null;
+    city_id?: number | null;
+    region_id?: number | null;
+    country_id?: number | null;
+    department_id?: number | null;
+    type?: string | null;
+    surface?: number | null;
+    base_rent?: number | null;
+    base_charges?: number | null;
     purchase_price?: number | null;
     status: string;
     created_at: string;
@@ -56,6 +56,37 @@ export type CreditSavePayload = {
 };
 
 export type ElectronApi = {
+    listProperties: (userId: number) => Promise<Property[]>;
+    createProperty: (payload: {
+        userId: number;
+        name: string;
+        address?: string;
+        city_id?: number | null;
+        region_id?: number | null;
+        country_id?: number | null;
+        department_id?: number | null;
+        type?: string;
+        surface?: number | null;
+        baseRent?: number | null;
+        baseCharges?: number | null;
+        purchase_price?: number | null;
+    }) => Promise<Property>;
+    updateProperty: (payload: {
+        id: number;
+        userId: number;
+        name?: string;
+        address?: string;
+        city_id?: number | null;
+        region_id?: number | null;
+        country_id?: number | null;
+        department_id?: number | null;
+        type?: string;
+        surface?: number | null;
+        baseRent?: number | null;
+        baseCharges?: number | null;
+        purchase_price?: number | null;
+        status?: string;
+    }) => Promise<Property>;
     listUsers: () => Promise<UserProfile[]>;
     createUser: (username: string, password: string) => Promise<UserProfile>;
     updateUser: (id: number, username: string) => Promise<UserProfile>;
@@ -257,3 +288,11 @@ export type AnnualSummary = {
     annual_credit: number;
     vacancy_cost: number;
 };
+
+declare global {
+    interface Window {
+        electron?: ElectronApi;
+    }
+}
+
+export {};

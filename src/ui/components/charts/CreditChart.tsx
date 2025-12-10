@@ -102,8 +102,8 @@ export function CreditChart({ data, colorScale, creditLabel }: Props) {
                 .attr("cy", (d) => y(d.credit))
                 .attr("r", 4)
                 .attr("fill", colorScale(series.propertyId))
-                .on("mouseenter", function (event, d) {
-                    showTooltip(event as unknown as MouseEvent, d, series.propertyName);
+                .on("mouseenter", (event: MouseEvent, d: MonthlyStat) => {
+                    showTooltip(event, d, series.propertyName);
                 })
                 .on("mouseleave", hideTooltip);
         });
