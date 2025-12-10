@@ -126,6 +126,7 @@ type EventPayloadArgs = {
     upsertCategory: { type: "expense" | "income"; name: string };
     listAmortizationsByProperty: { propertyId: number };
     listCashflowByProperty: { propertyId: number; year?: number };
+    getMonthlyStats: { propertyId: number; year?: number };
     getPropertyAnnualSummary: { propertyId: number; year?: number; purchase_price?: number | null };
     listVacancyMonths: { propertyId: number; year?: number };
     exportFinanceExcel: { propertyId: number; year?: number; purchase_price?: number | null };
@@ -216,6 +217,7 @@ type EventPayloadMapping = {
     upsertCategory: CategoryRow;
     listAmortizationsByProperty: AmortizationRow[];
     listCashflowByProperty: Array<{ month: number; income: number; expenses: number; credit: number; cashflow: number }>;
+    getMonthlyStats: Array<{ month: number; income: number; expense: number; credit: number; cashflow: number; vacancy: number }>;
     getPropertyAnnualSummary: {
         total_rents_received: number;
         total_expenses: number;

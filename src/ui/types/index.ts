@@ -22,7 +22,22 @@ export type Property = {
     created_at: string;
 };
 
-export type TabKey = "dashboard" | "finances" | "properties";
+export type TabKey = "dashboard" | "finances" | "properties" | "stats";
+
+export type MonthlyStat = {
+    month: number;
+    income: number;
+    expense: number;
+    credit: number;
+    cashflow: number;
+    vacancy: number;
+};
+
+export type PropertyMonthlyStats = {
+    propertyId: number;
+    propertyName: string;
+    stats: MonthlyStat[];
+};
 
 export type ElectronApi = any;
 

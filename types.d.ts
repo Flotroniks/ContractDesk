@@ -213,6 +213,7 @@ type EventPayloadMapping = {
     getCreditByProperty: Credit | null;
     saveCredit: Credit;
     deleteCredit: { success: boolean };
+    getMonthlyStats?: Array<{ month: number; income: number; expense: number; credit: number; cashflow: number; vacancy: number }>;
 }
 
 interface Window {
@@ -239,5 +240,6 @@ interface Window {
         saveCredit: (payload: Partial<Credit> & { property_id: number; refinance_from_id?: number | null }) => Promise<Credit>;
         deleteCredit: (id: number) => Promise<{ success: boolean }>;
         exportFinanceExcel?: (propertyId: number, year?: number, purchase_price?: number | null) => Promise<{ path: string }>;
+        getMonthlyStats?: (propertyId: number, year?: number) => Promise<Array<{ month: number; income: number; expense: number; credit: number; cashflow: number; vacancy: number }>>;
     }
 }

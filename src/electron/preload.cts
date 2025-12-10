@@ -108,6 +108,7 @@ type EventPayloadArgs = {
     upsertCategory: { type: "expense" | "income"; name: string };
     listAmortizationsByProperty: { propertyId: number };
     listCashflowByProperty: { propertyId: number; year?: number };
+    getMonthlyStats: { propertyId: number; year?: number };
     getPropertyAnnualSummary: { propertyId: number; year?: number; purchase_price?: number | null };
     listVacancyMonths: { propertyId: number; year?: number };
     exportFinanceExcel: { propertyId: number; year?: number; purchase_price?: number | null };
@@ -244,6 +245,15 @@ type CashflowRow = {
     cashflow: number;
 };
 
+type MonthlyStat = {
+    month: number;
+    income: number;
+    expense: number;
+    credit: number;
+    cashflow: number;
+    vacancy: number;
+};
+
 type AnnualSummary = {
     total_rents_received: number;
     total_expenses: number;
@@ -288,6 +298,7 @@ type EventPayloadMapping = {
     upsertCategory: Category;
     listAmortizationsByProperty: Amortization[];
     listCashflowByProperty: CashflowRow[];
+    getMonthlyStats: MonthlyStat[];
     getPropertyAnnualSummary: AnnualSummary;
     listVacancyMonths: { vacantMonths: number[]; vacancyRate: number };
     exportFinanceExcel: { path: string };
@@ -332,6 +343,7 @@ const api = {
     upsertCategory: (type: "expense" | "income", name: string) => ipcInvoke("upsertCategory", { type, name }),
     listAmortizationsByProperty: (propertyId: number) => ipcInvoke("listAmortizationsByProperty", { propertyId }),
     listCashflowByProperty: (propertyId: number, year?: number) => ipcInvoke("listCashflowByProperty", { propertyId, year }),
+    getMonthlyStats: (propertyId: number, year?: number) => ipcInvoke("getMonthlyStats", { propertyId, year }),
     getPropertyAnnualSummary: (propertyId: number, year?: number, purchase_price?: number | null) =>
         ipcInvoke("getPropertyAnnualSummary", { propertyId, year, purchase_price }),
     listVacancyMonths: (propertyId: number, year?: number) => ipcInvoke("listVacancyMonths", { propertyId, year }),

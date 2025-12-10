@@ -1384,6 +1384,28 @@ export function listCashflowByProperty(propertyId: number, year: number): Monthl
   return result;
 }
 
+export function listMonthlyStats(propertyId: number, year: number): Array<{
+  month: number;
+  income: number;
+  expense: number;
+  credit: number;
+  cashflow: number;
+  vacancy: number;
+}> {
+  const cashflow = listCashflowByProperty(propertyId, year);
+  const vacancy = listVacancyMonths(propertyId, year);
+  const vacancySet = new Set<number>(vacancy.vacantMonths ?? []);
+
+  return cashflow.map((row) => ({
+    month: row.month,
+    income: row.income,
+    expense: row.expenses,
+    credit: row.credit,
+    cashflow: row.cashflow,
+    vacancy: vacancySet.has(row.month) ? 1 : 0,
+  }));
+}
+
 type AnnualSummary = {
   total_rents_received: number;
   total_expenses: number;

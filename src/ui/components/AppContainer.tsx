@@ -66,7 +66,9 @@ export function AppContainer() {
 
     function handleEnterUser(user: typeof users[0]) {
         handleEnterUserProfile(user);
-        setActiveTab("properties");
+        const path = typeof window !== "undefined" ? window.location.pathname : "/";
+        const nextTab = path === "/finances" ? "finances" : path === "/stats" ? "stats" : "properties";
+        setActiveTab(nextTab);
         resetEditing();
     }
 

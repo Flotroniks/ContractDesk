@@ -53,7 +53,8 @@
             "leases": "Contrats",
             "dues": "Échéances",
             "dashboard": "Dashboard",
-            "finances": "Finances"
+            "finances": "Finances",
+            "stats": "Statistiques"
         },
         "properties": {
             "title": "Biens immobiliers",
