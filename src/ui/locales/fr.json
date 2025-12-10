@@ -12,6 +12,9 @@
         "addProfile": "Ajouter un profil",
         "add": "Ajouter"
     },
+    "errors": {
+        "monthlyStatsLoad": "Impossible de charger les statistiques mensuelles."
+    },
     "electronUnavailable": {
         "title": "Electron non disponible",
         "description": "Ouvre cette interface via Electron (commande `npm run dev`) pour utiliser les profils et la base locale."
@@ -53,7 +56,8 @@
             "leases": "Contrats",
             "dues": "Échéances",
             "dashboard": "Dashboard",
-            "finances": "Finances"
+            "finances": "Finances",
+            "stats": "Statistiques"
         },
         "properties": {
             "title": "Biens immobiliers",
@@ -179,5 +183,22 @@
         "local_commercial": "Local commercial",
         "parking": "Parking / box",
         "autre": "Autre"
+    },
+    "stats": {
+        "addPropertyPrompt": "Ajoutez un bien pour visualiser des statistiques.",
+        "mode": "Mode",
+        "singleMode": "Mono-propriété",
+        "multiMode": "Comparaison multi-propriétés",
+        "year": "Année",
+        "refresh": "Recharger",
+        "property": "Bien",
+        "propertiesMulti": "Biens (sélection multiple)",
+        "selectAtLeastOne": "Sélectionnez au moins un bien pour afficher les graphiques.",
+        "loading": "Chargement des données...",
+        "incomeVsExpenses": "Revenus vs Dépenses",
+        "cashflow": "Cashflow",
+        "credit": "Crédit",
+        "vacancy": "Vacance",
+        "noActiveCredit": "Aucun crédit actif pour ce bien"
     }
 }

@@ -4,6 +4,7 @@ import { PropertyForm } from "../components/PropertyForm";
 import { PropertyCard } from "../components/PropertyCard";
 import { PropertyCreditsCard } from "../components/PropertyCreditsCard";
 import { FinancesHub } from "../components/FinancesHub";
+import { StatsView } from "../components/StatsView";
 
 type UserDashboardViewProps = {
     user: UserProfile;
@@ -31,6 +32,7 @@ const tabs: Array<{ key: TabKey }> = [
     { key: "dashboard" },
     { key: "finances" },
     { key: "properties" },
+    { key: "stats" },
 ];
 
 export function UserDashboardView({
@@ -137,6 +139,8 @@ export function UserDashboardView({
                     </section>
                 ) : activeTab === "finances" ? (
                     <FinancesHub electronApi={electronApi} properties={properties} />
+                ) : activeTab === "stats" ? (
+                    <StatsView electronApi={electronApi} properties={properties} />
                 ) : (
                     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
                         <div className="text-center text-slate-500 py-12">

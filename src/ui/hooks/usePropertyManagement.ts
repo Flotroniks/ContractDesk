@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Property, PropertyDraft, TabKey, ElectronApi } from "../types";
 import { useProperties } from "./useProperties";
 import { usePropertyEditing } from "./usePropertyEditing";
 import { emptyPropertyDraft } from "../constants/propertyTypes";
 
 export function usePropertyManagement(electronApi: ElectronApi | null, userId: number | null) {
-    const [activeTab, setActiveTab] = useState<TabKey>("dashboard");
+    const initialTab = useMemo<TabKey>(() => {
+        if (typeof window === "undefined") return "dashboard";
+        if (window.location.pathname === "/finances") return "finances";
+        if (window.location.pathname === "/stats") return "stats";
+        return "dashboard";
+    }, []);
+
+    const [activeTab, setActiveTabState] = useState<TabKey>(initialTab);
     const [propertyForm, setPropertyForm] = useState<PropertyDraft>(emptyPropertyDraft);
 
     const { editingPropertyId, editPropertyDraft, setEditPropertyDraft, startEditProperty, cancelEditProperty, resetEditing } =
@@ -27,6 +34,14 @@ export function usePropertyManagement(electronApi: ElectronApi | null, userId: n
 
     function handleStartEditProperty(property: Property) {
         startEditProperty(property);
+    }
+
+    function setActiveTab(tab: TabKey) {
+        setActiveTabState(tab);
+        if (typeof window !== "undefined") {
+            const path = tab === "finances" ? "/finances" : tab === "stats" ? "/stats" : "/";
+            if (window.location.pathname !== path) window.history.replaceState(null, "", path);
+        }
     }
 
     return {

@@ -34,6 +34,7 @@ import {
     upsertCategory,
     listAmortizationsByProperty,
     listCashflowByProperty,
+    listMonthlyStats,
     getPropertyAnnualSummary,
     listVacancyMonths,
     listCreditsByProperty,
@@ -389,6 +390,10 @@ app.on("ready", () => {
     });
 
     // Finance: dashboards
+    ipcMainHandle<"getMonthlyStats">("getMonthlyStats", (payload) => {
+        return listMonthlyStats(payload?.propertyId ?? -1, payload?.year ?? new Date().getFullYear());
+    });
+
     ipcMainHandle<"listCashflowByProperty">("listCashflowByProperty", (payload) => {
         return listCashflowByProperty(payload?.propertyId ?? -1, payload?.year ?? new Date().getFullYear());
     });
