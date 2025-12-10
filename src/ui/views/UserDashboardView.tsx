@@ -6,6 +6,7 @@ import { PropertyCard } from "../components/PropertyCard";
 import { PropertyCreditsCard } from "../components/PropertyCreditsCard";
 import { FinancesHub } from "../components/FinancesHub";
 import { StatsView } from "../components/StatsView";
+import { PortfolioDashboard } from "../components/PortfolioDashboard";
 
 type UserDashboardViewProps = {
     user: UserProfile;
@@ -146,11 +147,7 @@ export function UserDashboardView({
                 ) : activeTab === "stats" ? (
                     <StatsView electronApi={electronApi} properties={properties} />
                 ) : (
-                    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
-                        <div className="text-center text-slate-500 py-12">
-                            {t("dashboard.comingSoon", { tab: t(`dashboard.tabs.${activeTab}`) })}
-                        </div>
-                    </div>
+                    <PortfolioDashboard electronApi={electronApi} properties={properties} />
                 )}
             </div>
         </div>
