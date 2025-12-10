@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from "electron"
 import { ipcMainHandle, isDev } from "./util.js";
+import type { UserRow, PropertyRow, ExpenseRow, IncomeRow, CategoryRow } from "./db/database.js";
 import { getPreloadPath, getUIPath, getIconPath } from "./pathResolver.js";
 import { getStaticData, pollResources } from "./test.js";
 import dotenv from "dotenv";
@@ -50,6 +51,41 @@ import fs from "fs";
  */
 
 dotenv.config();
+
+type ExpenseUpdatePayload = {
+    date?: string;
+    category?: string;
+    description?: string | null;
+    amount?: number;
+    is_recurring?: boolean;
+    frequency?: string | null;
+};
+
+type IncomeUpdatePayload = {
+    date?: string;
+    lease_id?: number | null;
+    amount?: number;
+    is_recurring?: boolean;
+    frequency?: string | null;
+    payment_method?: string | null;
+    notes?: string | null;
+};
+
+type CreditPayloadInput = {
+    id?: number;
+    user_id: number;
+    property_id: number;
+    credit_type?: string | null;
+    principal?: number | null;
+    down_payment?: number | null;
+    annual_rate?: number | null;
+    duration_months?: number | null;
+    start_date?: string | null;
+    insurance_monthly?: number | null;
+    notes?: string | null;
+    is_active?: number | boolean;
+    refinance_from_id?: number | null;
+};
 
 const PORT = process.env.PORT;
 if (!PORT) throw new Error("PORT env variable is not set");
@@ -132,88 +168,122 @@ app.on("ready", () => {
             id: p.id,
             user_id: p.user_id,
             name: p.name,
-            address: p.address ?? undefined,
-            city_id: p.city_id ?? undefined,
-            region_id: p.region_id ?? undefined,
-            country_id: p.country_id ?? undefined,
-            department_id: p.department_id ?? undefined,
-            type: p.type ?? undefined,
-            surface: p.surface ?? undefined,
-            base_rent: p.base_rent ?? undefined,
-            base_charges: p.base_charges ?? undefined,
-            purchase_price: p.purchase_price ?? undefined,
+            address: p.address ?? null,
+            city_id: p.city_id ?? null,
+            region_id: p.region_id ?? null,
+            country_id: p.country_id ?? null,
+            department_id: p.department_id ?? null,
+            type: p.type ?? null,
+            surface: p.surface ?? null,
+            base_rent: p.base_rent ?? null,
+            base_charges: p.base_charges ?? null,
+            purchase_price: p.purchase_price ?? null,
             status: p.status,
             created_at: p.created_at,
         }));
     });
 
     ipcMainHandle("createProperty", (payload) => {
-        const created = createProperty({
+        const propertyPayload: {
+            userId: number;
+            name: string;
+            address?: string;
+            city_id?: number | null;
+            region_id?: number | null;
+            country_id?: number | null;
+            department_id?: number | null;
+            type?: string;
+            surface?: number | null;
+            baseRent?: number | null;
+            baseCharges?: number | null;
+            purchase_price?: number | null;
+        } = {
             userId: payload?.userId ?? -1,
             name: payload?.name ?? "",
-            address: payload?.address,
-            city_id: payload?.city_id,
-            region_id: payload?.region_id,
-            country_id: payload?.country_id,
-            department_id: payload?.department_id,
-            type: payload?.type,
-            surface: payload?.surface,
-            baseRent: payload?.baseRent,
-            baseCharges: payload?.baseCharges,
-            purchase_price: payload?.purchase_price,
-        });
+        };
+
+        if (typeof payload?.address === "string") propertyPayload.address = payload.address;
+        if (payload?.city_id !== undefined) propertyPayload.city_id = payload.city_id;
+        if (payload?.region_id !== undefined) propertyPayload.region_id = payload.region_id;
+        if (payload?.country_id !== undefined) propertyPayload.country_id = payload.country_id;
+        if (payload?.department_id !== undefined) propertyPayload.department_id = payload.department_id;
+        if (typeof payload?.type === "string") propertyPayload.type = payload.type;
+        if (payload?.surface !== undefined) propertyPayload.surface = payload.surface;
+        if (payload?.baseRent !== undefined) propertyPayload.baseRent = payload.baseRent;
+        if (payload?.baseCharges !== undefined) propertyPayload.baseCharges = payload.baseCharges;
+        if (payload?.purchase_price !== undefined) propertyPayload.purchase_price = payload.purchase_price;
+
+        const created = createProperty(propertyPayload);
 
         return {
             id: created.id,
             user_id: created.user_id,
             name: created.name,
-            address: created.address ?? undefined,
-            city_id: created.city_id ?? undefined,
-            region_id: created.region_id ?? undefined,
-            country_id: created.country_id ?? undefined,
-            department_id: created.department_id ?? undefined,
-            type: created.type ?? undefined,
-            surface: created.surface ?? undefined,
-            base_rent: created.base_rent ?? undefined,
-            base_charges: created.base_charges ?? undefined,
-            purchase_price: created.purchase_price ?? undefined,
+            address: created.address ?? null,
+            city_id: created.city_id ?? null,
+            region_id: created.region_id ?? null,
+            country_id: created.country_id ?? null,
+            department_id: created.department_id ?? null,
+            type: created.type ?? null,
+            surface: created.surface ?? null,
+            base_rent: created.base_rent ?? null,
+            base_charges: created.base_charges ?? null,
+            purchase_price: created.purchase_price ?? null,
             status: created.status,
             created_at: created.created_at,
         };
     });
 
     ipcMainHandle("updateProperty", (payload) => {
-        const updated = updateProperty({
+        const updatePayload: {
+            id: number;
+            userId: number;
+            name?: string;
+            address?: string;
+            city_id?: number | null;
+            region_id?: number | null;
+            country_id?: number | null;
+            department_id?: number | null;
+            type?: string;
+            surface?: number | null;
+            baseRent?: number | null;
+            baseCharges?: number | null;
+            purchase_price?: number | null;
+            status?: string;
+        } = {
             id: payload?.id ?? -1,
             userId: payload?.userId ?? -1,
-            name: payload?.name,
-            address: payload?.address,
-            city_id: payload?.city_id,
-            region_id: payload?.region_id,
-            country_id: payload?.country_id,
-            department_id: payload?.department_id,
-            type: payload?.type,
-            surface: payload?.surface,
-            baseRent: payload?.baseRent,
-            baseCharges: payload?.baseCharges,
-            purchase_price: payload?.purchase_price,
-            status: payload?.status,
-        });
+        };
+
+        if (payload?.name !== undefined) updatePayload.name = payload.name;
+        if (typeof payload?.address === "string") updatePayload.address = payload.address;
+        if (payload?.city_id !== undefined) updatePayload.city_id = payload.city_id;
+        if (payload?.region_id !== undefined) updatePayload.region_id = payload.region_id;
+        if (payload?.country_id !== undefined) updatePayload.country_id = payload.country_id;
+        if (payload?.department_id !== undefined) updatePayload.department_id = payload.department_id;
+        if (typeof payload?.type === "string") updatePayload.type = payload.type;
+        if (payload?.surface !== undefined) updatePayload.surface = payload.surface;
+        if (payload?.baseRent !== undefined) updatePayload.baseRent = payload.baseRent;
+        if (payload?.baseCharges !== undefined) updatePayload.baseCharges = payload.baseCharges;
+        if (payload?.purchase_price !== undefined) updatePayload.purchase_price = payload.purchase_price;
+        if (payload?.status !== undefined) updatePayload.status = payload.status;
+
+        const updated = updateProperty(updatePayload);
 
         return {
             id: updated.id,
             user_id: updated.user_id,
             name: updated.name,
-            address: updated.address ?? undefined,
-            city_id: updated.city_id ?? undefined,
-            region_id: updated.region_id ?? undefined,
-            country_id: updated.country_id ?? undefined,
-            department_id: updated.department_id ?? undefined,
-            type: updated.type ?? undefined,
-            surface: updated.surface ?? undefined,
-            base_rent: updated.base_rent ?? undefined,
-            base_charges: updated.base_charges ?? undefined,
-            purchase_price: updated.purchase_price ?? undefined,
+            address: updated.address ?? null,
+            city_id: updated.city_id ?? null,
+            region_id: updated.region_id ?? null,
+            country_id: updated.country_id ?? null,
+            department_id: updated.department_id ?? null,
+            type: updated.type ?? null,
+            surface: updated.surface ?? null,
+            base_rent: updated.base_rent ?? null,
+            base_charges: updated.base_charges ?? null,
+            purchase_price: updated.purchase_price ?? null,
             status: updated.status,
             created_at: updated.created_at,
         };
@@ -285,14 +355,15 @@ app.on("ready", () => {
     });
 
     ipcMainHandle<"updateExpense">("updateExpense", (payload) => {
-        const updated = updateExpense(payload?.id ?? -1, {
-            date: payload?.date,
-            category: payload?.category,
-            description: payload?.description,
-            amount: payload?.amount,
-            is_recurring: payload?.is_recurring,
-            frequency: payload?.frequency,
-        });
+        const updatePayload: ExpenseUpdatePayload = {};
+        if (payload?.date !== undefined) updatePayload.date = payload.date;
+        if (payload?.category !== undefined) updatePayload.category = payload.category;
+        if (payload?.description !== undefined) updatePayload.description = payload.description ?? null;
+        if (payload?.amount !== undefined) updatePayload.amount = payload.amount;
+        if (payload?.is_recurring !== undefined) updatePayload.is_recurring = payload.is_recurring;
+        if (payload?.frequency !== undefined) updatePayload.frequency = payload.frequency ?? null;
+
+        const updated = updateExpense(payload?.id ?? -1, updatePayload);
         return updated;
     });
 
@@ -320,13 +391,14 @@ app.on("ready", () => {
     });
 
     ipcMainHandle<"updateIncome">("updateIncome", (payload) => {
-        const updated = updateIncome(payload?.id ?? -1, {
-            lease_id: payload?.lease_id,
-            date: payload?.date,
-            amount: payload?.amount,
-            payment_method: payload?.payment_method,
-            notes: payload?.notes,
-        });
+        const updatePayload: IncomeUpdatePayload = {};
+        if (payload?.lease_id !== undefined) updatePayload.lease_id = payload.lease_id ?? null;
+        if (payload?.date !== undefined) updatePayload.date = payload.date;
+        if (payload?.amount !== undefined) updatePayload.amount = payload.amount;
+        if (payload?.payment_method !== undefined) updatePayload.payment_method = payload.payment_method ?? null;
+        if (payload?.notes !== undefined) updatePayload.notes = payload.notes ?? null;
+
+        const updated = updateIncome(payload?.id ?? -1, updatePayload);
         return updated;
     });
 
@@ -347,21 +419,25 @@ app.on("ready", () => {
     ipcMainHandle<"saveCredit">("saveCredit", (payload) => {
         const userId = payload?.user_id ?? -1;
         if (userId < 0) throw new Error("credit_user_required");
-        const saved = saveCredit({
-            id: payload?.id,
+
+        const creditPayload: CreditPayloadInput = {
             user_id: userId,
             property_id: payload?.property_id ?? -1,
             credit_type: payload?.credit_type ?? null,
-            down_payment: payload?.down_payment ?? null,
             principal: payload?.principal ?? null,
+            down_payment: payload?.down_payment ?? null,
             annual_rate: payload?.annual_rate ?? null,
-            duration_months: payload?.duration_months ?? null,
             start_date: payload?.start_date ?? null,
+            duration_months: payload?.duration_months ?? null,
             insurance_monthly: payload?.insurance_monthly ?? null,
             notes: payload?.notes ?? null,
             is_active: payload?.is_active ?? 1,
             refinance_from_id: payload?.refinance_from_id ?? null,
-        });
+        };
+
+        if (payload?.id !== undefined) creditPayload.id = payload.id;
+
+        const saved = saveCredit(creditPayload);
         return saved;
     });
 

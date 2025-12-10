@@ -315,44 +315,181 @@ const api = {
         }),
     getStaticData: () => ipcInvoke("getStaticData"),
     listUsers: () => ipcInvoke("listUsers"),
-    createUser: (username: string, password?: string) => ipcInvoke("createUser", { username, password }),
+    createUser: (username: string, password?: string) => {
+        const payload = password === undefined ? { username } : { username, password };
+        return ipcInvoke("createUser", payload);
+    },
     updateUser: (id: number, username: string) => ipcInvoke("updateUser", { id, username }),
     deleteUser: (id: number, password: string) => ipcInvoke("deleteUser", { id, password }),
     listProperties: (userId: number) => ipcInvoke("listProperties", { userId }),
-    createProperty: (data: EventPayloadArgs['createProperty']) => ipcInvoke("createProperty", data),
-    updateProperty: (data: EventPayloadArgs['updateProperty']) => ipcInvoke("updateProperty", data),
+    createProperty: (data: EventPayloadArgs['createProperty']) => {
+        const payload: EventPayloadArgs['createProperty'] = {
+            userId: data.userId,
+            name: data.name,
+        };
+        if (data.address !== undefined) payload.address = data.address;
+        if (data.city_id !== undefined) payload.city_id = data.city_id;
+        if (data.department_id !== undefined) payload.department_id = data.department_id;
+        if (data.region_id !== undefined) payload.region_id = data.region_id;
+        if (data.state !== undefined) payload.state = data.state;
+        if (data.country_id !== undefined) payload.country_id = data.country_id;
+        if (data.type !== undefined) payload.type = data.type;
+        if (data.surface !== undefined) payload.surface = data.surface;
+        if (data.baseRent !== undefined) payload.baseRent = data.baseRent;
+        if (data.baseCharges !== undefined) payload.baseCharges = data.baseCharges;
+        if (data.purchase_price !== undefined) payload.purchase_price = data.purchase_price;
+        return ipcInvoke("createProperty", payload);
+    },
+    updateProperty: (data: EventPayloadArgs['updateProperty']) => {
+        const payload: EventPayloadArgs['updateProperty'] = {
+            id: data.id,
+            userId: data.userId,
+        };
+        if (data.name !== undefined) payload.name = data.name;
+        if (data.address !== undefined) payload.address = data.address;
+        if (data.city_id !== undefined) payload.city_id = data.city_id;
+        if (data.department_id !== undefined) payload.department_id = data.department_id;
+        if (data.region_id !== undefined) payload.region_id = data.region_id;
+        if (data.state !== undefined) payload.state = data.state;
+        if (data.country_id !== undefined) payload.country_id = data.country_id;
+        if (data.type !== undefined) payload.type = data.type;
+        if (data.surface !== undefined) payload.surface = data.surface;
+        if (data.baseRent !== undefined) payload.baseRent = data.baseRent;
+        if (data.baseCharges !== undefined) payload.baseCharges = data.baseCharges;
+        if (data.purchase_price !== undefined) payload.purchase_price = data.purchase_price;
+        if (data.status !== undefined) payload.status = data.status;
+        return ipcInvoke("updateProperty", payload);
+    },
     listCountries: () => ipcInvoke("listCountries"),
     listRegions: (countryId: number) => ipcInvoke("listRegions", { countryId }),
-    listCities: (regionId?: number, departmentId?: number) => ipcInvoke("listCities", { regionId, departmentId }),
-    listDepartments: (regionId?: number) => ipcInvoke("listDepartments", { regionId }),
-    createCountry: (name: string, code?: string | null) => ipcInvoke("createCountry", { name, code }),
+    listCities: (regionId?: number, departmentId?: number) => {
+        const payload: { regionId?: number; departmentId?: number } = {};
+        if (regionId !== undefined) payload.regionId = regionId;
+        if (departmentId !== undefined) payload.departmentId = departmentId;
+        return ipcInvoke("listCities", payload);
+    },
+    listDepartments: (regionId?: number) => {
+        const payload: { regionId?: number } = {};
+        if (regionId !== undefined) payload.regionId = regionId;
+        return ipcInvoke("listDepartments", payload);
+    },
+    createCountry: (name: string, code?: string | null) => {
+        const payload: { name: string; code?: string | null } = { name };
+        if (code !== undefined) payload.code = code;
+        return ipcInvoke("createCountry", payload);
+    },
     createRegion: (countryId: number, name: string) => ipcInvoke("createRegion", { countryId, name }),
-    createCity: (regionId: number, countryId: number, departmentId: number | null, name: string) =>
-        ipcInvoke("createCity", { regionId, countryId, departmentId, name }),
+    createCity: (regionId: number, countryId: number, departmentId: number | null, name: string) => {
+        const payload: { regionId: number; countryId: number; departmentId?: number | null; name: string } = { regionId, countryId, name };
+        if (departmentId !== undefined) payload.departmentId = departmentId;
+        return ipcInvoke("createCity", payload);
+    },
     createDepartment: (regionId: number, name: string) => ipcInvoke("createDepartment", { regionId, name }),
-    listExpensesByProperty: (propertyId: number, year?: number) => ipcInvoke("listExpensesByProperty", { propertyId, year }),
-    createExpense: (data: EventPayloadArgs['createExpense']) => ipcInvoke("createExpense", data),
-    updateExpense: (id: number, data: Omit<EventPayloadArgs['updateExpense'], 'id'>) =>
-        ipcInvoke("updateExpense", { id, ...data }),
+    listExpensesByProperty: (propertyId: number, year?: number) => {
+        const payload: { propertyId: number; year?: number } = { propertyId };
+        if (year !== undefined) payload.year = year;
+        return ipcInvoke("listExpensesByProperty", payload);
+    },
+    createExpense: (data: EventPayloadArgs['createExpense']) => {
+        const payload: EventPayloadArgs['createExpense'] = {
+            property_id: data.property_id,
+            date: data.date,
+            category: data.category,
+            amount: data.amount,
+        };
+        if (data.description !== undefined) payload.description = data.description;
+        if (data.is_recurring !== undefined) payload.is_recurring = data.is_recurring;
+        if (data.frequency !== undefined) payload.frequency = data.frequency;
+        return ipcInvoke("createExpense", payload);
+    },
+    updateExpense: (id: number, data: Omit<EventPayloadArgs['updateExpense'], 'id'>) => {
+        const payload: EventPayloadArgs['updateExpense'] = { id };
+        if (data.date !== undefined) payload.date = data.date;
+        if (data.category !== undefined) payload.category = data.category;
+        if (data.description !== undefined) payload.description = data.description;
+        if (data.amount !== undefined) payload.amount = data.amount;
+        if (data.is_recurring !== undefined) payload.is_recurring = data.is_recurring;
+        if (data.frequency !== undefined) payload.frequency = data.frequency;
+        return ipcInvoke("updateExpense", payload);
+    },
     deleteExpense: (id: number) => ipcInvoke("deleteExpense", { id }),
-    listIncomesByProperty: (propertyId: number, year?: number) => ipcInvoke("listIncomesByProperty", { propertyId, year }),
-    createIncome: (data: EventPayloadArgs['createIncome']) => ipcInvoke("createIncome", data),
-    updateIncome: (id: number, data: Omit<EventPayloadArgs['updateIncome'], 'id'>) => ipcInvoke("updateIncome", { id, ...data }),
+    listIncomesByProperty: (propertyId: number, year?: number) => {
+        const payload: { propertyId: number; year?: number } = { propertyId };
+        if (year !== undefined) payload.year = year;
+        return ipcInvoke("listIncomesByProperty", payload);
+    },
+    createIncome: (data: EventPayloadArgs['createIncome']) => {
+        const payload: EventPayloadArgs['createIncome'] = {
+            property_id: data.property_id,
+            date: data.date,
+            amount: data.amount,
+        };
+        if (data.lease_id !== undefined) payload.lease_id = data.lease_id;
+        if (data.payment_method !== undefined) payload.payment_method = data.payment_method;
+        if (data.notes !== undefined) payload.notes = data.notes;
+        return ipcInvoke("createIncome", payload);
+    },
+    updateIncome: (id: number, data: Omit<EventPayloadArgs['updateIncome'], 'id'>) => {
+        const payload: EventPayloadArgs['updateIncome'] = { id };
+        if (data.lease_id !== undefined) payload.lease_id = data.lease_id;
+        if (data.date !== undefined) payload.date = data.date;
+        if (data.amount !== undefined) payload.amount = data.amount;
+        if (data.payment_method !== undefined) payload.payment_method = data.payment_method;
+        if (data.notes !== undefined) payload.notes = data.notes;
+        return ipcInvoke("updateIncome", payload);
+    },
     deleteIncome: (id: number) => ipcInvoke("deleteIncome", { id }),
     listCreditsByProperty: (propertyId: number) => ipcInvoke("listCreditsByProperty", { propertyId }),
     getCreditByProperty: (propertyId: number) => ipcInvoke("getCreditByProperty", { propertyId }),
-    saveCredit: (data: EventPayloadArgs['saveCredit']) => ipcInvoke("saveCredit", data),
+    saveCredit: (data: EventPayloadArgs['saveCredit']) => {
+        const payload: EventPayloadArgs['saveCredit'] = {
+            user_id: data.user_id,
+            property_id: data.property_id,
+        };
+        if (data.id !== undefined) payload.id = data.id;
+        if (data.credit_type !== undefined) payload.credit_type = data.credit_type;
+        if (data.down_payment !== undefined) payload.down_payment = data.down_payment;
+        if (data.principal !== undefined) payload.principal = data.principal;
+        if (data.annual_rate !== undefined) payload.annual_rate = data.annual_rate;
+        if (data.duration_months !== undefined) payload.duration_months = data.duration_months;
+        if (data.start_date !== undefined) payload.start_date = data.start_date;
+        if (data.insurance_monthly !== undefined) payload.insurance_monthly = data.insurance_monthly;
+        if (data.notes !== undefined) payload.notes = data.notes;
+        if (data.is_active !== undefined) payload.is_active = data.is_active;
+        if (data.refinance_from_id !== undefined) payload.refinance_from_id = data.refinance_from_id;
+        return ipcInvoke("saveCredit", payload);
+    },
     deleteCredit: (id: number) => ipcInvoke("deleteCredit", { id }),
     listCategories: (type: "expense" | "income") => ipcInvoke("listCategories", { type }),
     upsertCategory: (type: "expense" | "income", name: string) => ipcInvoke("upsertCategory", { type, name }),
     listAmortizationsByProperty: (propertyId: number) => ipcInvoke("listAmortizationsByProperty", { propertyId }),
-    listCashflowByProperty: (propertyId: number, year?: number) => ipcInvoke("listCashflowByProperty", { propertyId, year }),
-    getMonthlyStats: (propertyId: number, year?: number) => ipcInvoke("getMonthlyStats", { propertyId, year }),
-    getPropertyAnnualSummary: (propertyId: number, year?: number, purchase_price?: number | null) =>
-        ipcInvoke("getPropertyAnnualSummary", { propertyId, year, purchase_price }),
-    listVacancyMonths: (propertyId: number, year?: number) => ipcInvoke("listVacancyMonths", { propertyId, year }),
-    exportFinanceExcel: (propertyId: number, year?: number, purchase_price?: number | null) =>
-        ipcInvoke("exportFinanceExcel", { propertyId, year, purchase_price }),
+    listCashflowByProperty: (propertyId: number, year?: number) => {
+        const payload: { propertyId: number; year?: number } = { propertyId };
+        if (year !== undefined) payload.year = year;
+        return ipcInvoke("listCashflowByProperty", payload);
+    },
+    getMonthlyStats: (propertyId: number, year?: number) => {
+        const payload: { propertyId: number; year?: number } = { propertyId };
+        if (year !== undefined) payload.year = year;
+        return ipcInvoke("getMonthlyStats", payload);
+    },
+    getPropertyAnnualSummary: (propertyId: number, year?: number, purchase_price?: number | null) => {
+        const payload: { propertyId: number; year?: number; purchase_price?: number | null } = { propertyId };
+        if (year !== undefined) payload.year = year;
+        if (purchase_price !== undefined) payload.purchase_price = purchase_price;
+        return ipcInvoke("getPropertyAnnualSummary", payload);
+    },
+    listVacancyMonths: (propertyId: number, year?: number) => {
+        const payload: { propertyId: number; year?: number } = { propertyId };
+        if (year !== undefined) payload.year = year;
+        return ipcInvoke("listVacancyMonths", payload);
+    },
+    exportFinanceExcel: (propertyId: number, year?: number, purchase_price?: number | null) => {
+        const payload: { propertyId: number; year?: number; purchase_price?: number | null } = { propertyId };
+        if (year !== undefined) payload.year = year;
+        if (purchase_price !== undefined) payload.purchase_price = purchase_price;
+        return ipcInvoke("exportFinanceExcel", payload);
+    },
 };
 
 electron.contextBridge.exposeInMainWorld("electron", api);
