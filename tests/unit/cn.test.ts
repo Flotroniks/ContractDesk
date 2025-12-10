@@ -6,6 +6,7 @@ describe("cn", () => {
     });
 
     it("drops falsy values while keeping truthy ones", () => {
-        expect(cn("btn", undefined, null as unknown as string, false && "hidden", "active")).toBe("btn active");
+        const hidden = false as boolean;
+        expect(cn("btn", undefined, null as unknown as string, hidden && "hidden", "active")).toBe("btn active");
     });
 });

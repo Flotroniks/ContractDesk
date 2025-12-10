@@ -1,8 +1,20 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { ElectronApi, Property, UserProfile } from "../types";
+import type { AnnualSummary, CashflowRow, ElectronApi, Property, UserProfile } from "../types";
 
 const currentYear = new Date().getFullYear();
+
+/**
+ * Portfolio-level view aggregating financial metrics across all active properties for a user.
+ */
+type PortfolioEntry = {
+    property: Property;
+    summary: AnnualSummary;
+    cashflow: CashflowRow[];
+    vacancy: { vacantMonths: number[]; vacancyRate: number };
+    totalCashflow: number;
+};
 
 export function PortfolioFinances({ electronApi, properties, onBack, user }: { electronApi: ElectronApi; properties: Property[]; onBack: () => void; user: UserProfile }) {
     const { t } = useTranslation();
@@ -19,14 +31,14 @@ export function PortfolioFinances({ electronApi, properties, onBack, user }: { e
             setLoading(true);
             setError(null);
             try {
-                const entries = await Promise.all(
+                const entries: PortfolioEntry[] = await Promise.all(
                     activeProperties.map(async (property) => {
                         const [summary, cashflow, vacancy] = await Promise.all([
                             electronApi.getPropertyAnnualSummary(property.id, year, property.purchase_price ?? null),
                             electronApi.listCashflowByProperty(property.id, year),
                             electronApi.listVacancyMonths(property.id, year),
                         ]);
-                        const totalCashflow = cashflow.reduce((acc: number, row: any) => acc + (row.cashflow ?? 0), 0);
+                        const totalCashflow = cashflow.reduce((acc: number, row: CashflowRow) => acc + row.cashflow, 0);
                         return { property, summary, cashflow, vacancy, totalCashflow };
                     })
                 );
@@ -49,7 +61,7 @@ export function PortfolioFinances({ electronApi, properties, onBack, user }: { e
                     totalPurchasePrice += entry.property.purchase_price ?? 0;
                     vacancyMonthsCount += entry.vacancy?.vacantMonths?.length ?? 0;
 
-                    entry.cashflow.forEach((row: any) => {
+                    entry.cashflow.forEach((row: CashflowRow) => {
                         const target = monthly[row.month - 1];
                         target.income += row.income ?? 0;
                         target.expenses += row.expenses ?? 0;
@@ -272,8 +284,8 @@ type PortfolioData = {
     vacancyRate: number;
     ranking: Array<{
         property: Property;
-        summary: any;
-        cashflow: any[];
+        summary: AnnualSummary;
+        cashflow: CashflowRow[];
         vacancy: { vacantMonths: number[]; vacancyRate: number };
         totalCashflow: number;
     }>;

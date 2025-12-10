@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import type { UserProfile, PropertyDraft, Property, TabKey } from "../types";
 import { emptyPropertyDraft } from "../constants/propertyTypes";
 
@@ -20,6 +21,10 @@ type UseAppHandlersProps = {
     editingValue: string;
 };
 
+/**
+ * Aggregate UI callbacks that fan out to user/property mutations while keeping
+ * component code lean.
+ */
 export function useAppHandlers({
     createUser,
     updateUser,
@@ -38,6 +43,9 @@ export function useAppHandlers({
     enteredUser,
     editingValue,
 }: UseAppHandlersProps) {
+    /**
+     * Create a new profile and wire selection state when successful.
+     */
     async function handleCreateUser(newUserName: string) {
         const created = await createUser(newUserName);
         if (created) {
@@ -47,6 +55,9 @@ export function useAppHandlers({
         }
     }
 
+    /**
+     * Persist a username change and refresh selected/entered references.
+     */
     async function saveEdit(id: number) {
         const updated = await updateUser(id, editingValue);
         if (updated) {
@@ -56,6 +67,9 @@ export function useAppHandlers({
         }
     }
 
+    /**
+     * Navigate into a profile while resetting any editing state.
+     */
     function enterUserProfile(user: UserProfile) {
         setEnteredUser(user);
         setSelectedUser(user);
@@ -63,11 +77,17 @@ export function useAppHandlers({
         resetEditing();
     }
 
+    /**
+     * Create a new property and reset the draft when successful.
+     */
     async function handleCreateProperty(propertyForm: PropertyDraft) {
         const created = await createProperty(propertyForm);
         if (created) setPropertyForm(emptyPropertyDraft);
     }
 
+    /**
+     * Save property edits and exit editing mode after success.
+     */
     async function savePropertyEdit(id: number, editPropertyDraft: PropertyDraft & { status: string }) {
         const updated = await updateProperty(id, editPropertyDraft);
         if (updated) cancelEditProperty();

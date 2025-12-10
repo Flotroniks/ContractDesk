@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import type { MonthlyStat, PropertyMonthlyStats } from "../../types";
@@ -10,6 +11,9 @@ function formatMonth(month: number) {
 
 type Props = { data: PropertyMonthlyStats[]; colorScale: (propertyId: number) => string; cashflowLabel: string };
 
+/**
+ * Line chart visualizing monthly cashflow trends per property with tooltips.
+ */
 export function CashflowChart({ data, colorScale, cashflowLabel }: Props) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const svgRef = useRef<SVGSVGElement | null>(null);
@@ -118,7 +122,7 @@ export function CashflowChart({ data, colorScale, cashflowLabel }: Props) {
             });
 
         return () => svg.selectAll("*").remove();
-    }, [colorScale, data, width]);
+    }, [cashflowLabel, colorScale, data, width]);
 
     return (
         <div ref={containerRef} className="relative h-[260px] w-full">

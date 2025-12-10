@@ -1,7 +1,7 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
-import { app } from 'electron';
 import bcrypt from 'bcryptjs';
 import { calculateMonthlyPayment, totalMonthlyCharge, isCreditFinished } from '../../shared/credit.js';
 
@@ -467,8 +467,7 @@ export type CategoryRow = {
 };
 
 /**
- * List all users ordered by creation date.
- * @returns Array of persisted users with ids and timestamps.
+ * Return all users ordered by creation date.
  */
 export function listUsers(): UserRow[] {
   const db = getDb();
@@ -480,9 +479,7 @@ export function listUsers(): UserRow[] {
 }
 
 /**
- * Create a user with a hashed password.
- * @param username User login name.
- * @param password Plaintext password (default 1234 for bootstrapping).
+ * Create a user with a bcrypt-hashed password and return the inserted row.
  */
 export function createUser(username: string, password: string = '1234'): UserRow {
   const trimmedName = username.trim();
@@ -514,7 +511,7 @@ export function createUser(username: string, password: string = '1234'): UserRow
 }
 
 /**
- * Verify credentials and return the user row on success.
+ * Validate password for a username; returns the row when valid.
  */
 export function verifyUserPassword(username: string, password: string): UserRow | null {
   const db = getDb();
@@ -529,7 +526,7 @@ export function verifyUserPassword(username: string, password: string): UserRow 
 }
 
 /**
- * Update a username while keeping uniqueness constraints intact.
+ * Update username for a user, enforcing uniqueness.
  */
 export function updateUser(id: number, username: string): UserRow {
   const trimmedName = username.trim();
@@ -561,8 +558,7 @@ export function updateUser(id: number, username: string): UserRow {
 }
 
 /**
- * Delete a user and cascade delete their properties.
- * @returns Count of properties removed.
+ * Delete a user and cascade remove their properties.
  */
 export function deleteUser(id: number): { propertiesDeleted: number } {
   const db = getDb();

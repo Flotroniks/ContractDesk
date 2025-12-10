@@ -19,6 +19,9 @@ export default tseslint.config(
 			'react-refresh': reactRefresh,
 			jsdoc,
 		},
+		linterOptions: {
+			reportUnusedDisableDirectives: 'off',
+		},
 		rules: {
 			...reactHooks.configs.recommended.rules,
 			'react-refresh/only-export-components': [

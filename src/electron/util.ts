@@ -18,6 +18,9 @@ dotenv.config();
 const PORT = process.env.PORT;
 if (!PORT) throw new Error("PORT env variable is not set");
 
+/**
+ * IPC request payloads keyed by channel. Keep in sync with renderer bridge and main handlers.
+ */
 type EventPayloadArgs = {
     statistics: void;
     getStaticData: void;
@@ -132,6 +135,9 @@ type EventPayloadArgs = {
     exportFinanceExcel: { propertyId: number; year?: number; purchase_price?: number | null };
 };
 
+/**
+ * IPC response payloads keyed by channel. Mirrors EventPayloadArgs channels to shape replies.
+ */
 type EventPayloadMapping = {
     statistics: { cpuUsage: number; ramUsage: number; storageData: number };
     getStaticData: { totalStorage: number; cpuModel: string; totalMemoryGB: number };
@@ -231,12 +237,20 @@ type EventPayloadMapping = {
     exportFinanceExcel: { path: string };
 };
 
-// Checks if you are in development mode
+/**
+ * Check whether the app is running in development mode.
+ * @returns {boolean} True when NODE_ENV is set to development.
+ */
 export function isDev(): boolean {
     return process.env.NODE_ENV == "development";
 }
 
-// Making IPC Typesafe
+/**
+ * Strongly typed wrapper for ipcMain.handle that validates the sender frame and binds payload/response types per channel.
+ * @template {keyof EventPayloadMapping} Key
+ * @param {Key} key IPC channel key from EventPayloadMapping.
+ * @param {(payload: EventPayloadArgs[Key]) => EventPayloadMapping[Key] | Promise<EventPayloadMapping[Key]>} handler Business handler returning a response (sync or async).
+ */
 export function ipcMainHandle<Key extends keyof EventPayloadMapping>(
     key: Key,
     handler: (payload: EventPayloadArgs[Key]) => EventPayloadMapping[Key] | Promise<EventPayloadMapping[Key]>
@@ -248,12 +262,24 @@ export function ipcMainHandle<Key extends keyof EventPayloadMapping>(
     });
 }
 
+/**
+ * Send a typed IPC event from the main process to renderer webContents.
+ * @template {keyof EventPayloadMapping} Key
+ * @param {Key} key IPC channel key.
+ * @param {WebContents} webContents Target renderer webContents.
+ * @param {EventPayloadMapping[Key]} payload Data to send, shaped by EventPayloadMapping.
+ */
 export function ipcWebContentsSend<Key extends keyof EventPayloadMapping>(key: Key, webContents: WebContents, payload: EventPayloadMapping[Key]) {
     webContents.send(key as string, payload);
 }
 
 export type { EventPayloadArgs, EventPayloadMapping };
 
+/**
+ * Validate that an IPC event originates from the trusted renderer URL (dev server or packaged UI).
+ * @param {WebFrameMain} frame Sender frame metadata.
+ * @throws Error when the frame URL does not match the expected UI path, blocking malicious events.
+ */
 export function validateEventFrame(frame: WebFrameMain) {
     if (isDev() && new URL(frame.url).host === `localhost:${PORT}`) return;
 

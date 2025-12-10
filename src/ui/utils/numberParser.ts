@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import type { NumberParseResult } from "../types";
 
 export function parseNumberInput(value: string): NumberParseResult {

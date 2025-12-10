@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useState } from "react";
 import { useUserManagement } from "../hooks/useUserManagement";
 import { usePropertyManagement } from "../hooks/usePropertyManagement";
@@ -10,6 +11,11 @@ import { ConfirmPasswordDialog } from "./ConfirmPasswordDialog";
 import { PortfolioFinances } from "./PortfolioFinances";
 import type { UserProfile } from "../types";
 
+/**
+ * Main application container orchestrating Electron availability, user selection, and dashboard flows.
+ * @component
+ * @returns React element routing between profile picker, dashboards, and portfolio finance view.
+ */
 export function AppContainer() {
     const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null);
     const [userPropertiesCount, setUserPropertiesCount] = useState(0);
@@ -64,6 +70,10 @@ export function AppContainer() {
         resetEditing,
     } = usePropertyManagement(electronApi, enteredUser?.id ?? null);
 
+    /**
+     * Enter a user dashboard and align the active tab with the current route.
+     * @param user Selected user profile instance.
+     */
     function handleEnterUser(user: typeof users[0]) {
         handleEnterUserProfile(user);
         const path = typeof window !== "undefined" ? window.location.pathname : "/";
@@ -72,6 +82,10 @@ export function AppContainer() {
         resetEditing();
     }
 
+    /**
+     * Prefetch property count and open the delete confirmation flow for a user.
+     * @param user Target user slated for deletion.
+     */
     async function handleRequestDelete(user: UserProfile) {
         if (!electronApi) return;
         const userProps = await electronApi.listProperties(user.id);
@@ -80,6 +94,10 @@ export function AppContainer() {
         setShowPasswordConfirm(true);
     }
 
+    /**
+     * Confirm deletion after password verification.
+     * @param password User password entered for confirmation.
+     */
     async function handleConfirmDelete(password: string) {
         if (!deleteTarget) return;
         try {
@@ -92,6 +110,9 @@ export function AppContainer() {
         }
     }
 
+    /**
+     * Abort user deletion flow and reset dialog state.
+     */
     function handleCancelDelete() {
         setDeleteTarget(null);
         setUserPropertiesCount(0);

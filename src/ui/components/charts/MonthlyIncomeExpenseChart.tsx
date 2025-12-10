@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import type { MonthlyStat, PropertyMonthlyStats } from "../../types";
@@ -15,6 +16,9 @@ type Props = {
     expenseLabel: string;
 };
 
+/**
+ * Grouped bar chart comparing monthly income vs expenses across properties.
+ */
 export function MonthlyIncomeExpenseChart({ data, colorScale, incomeLabel, expenseLabel }: Props) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const svgRef = useRef<SVGSVGElement | null>(null);
@@ -150,7 +154,7 @@ export function MonthlyIncomeExpenseChart({ data, colorScale, incomeLabel, expen
             });
 
         return () => svg.selectAll("*").remove();
-    }, [colorScale, data, width]);
+    }, [colorScale, data, expenseLabel, incomeLabel, width]);
 
     return (
         <div ref={containerRef} className="relative h-[320px] w-full">

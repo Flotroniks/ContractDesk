@@ -304,6 +304,10 @@ type EventPayloadMapping = {
     exportFinanceExcel: { path: string };
 };
 
+/**
+ * Typed IPC facade exposed to the renderer via `window.electron`.
+ * Each method mirrors an ipcMain handler declared in `main.ts`.
+ */
 const api = {
     subscribeStatistics: (callback: (stats: Statistics) => void) =>
         ipcOn("statistics", stats => {
@@ -359,6 +363,9 @@ console.log("[preload] chargé", {
     electron: process.versions.electron
 });
 
+/**
+ * Invoke a typed IPC channel and return the mapped payload.
+ */
 function ipcInvoke<Key extends keyof EventPayloadMapping>(
     key: Key,
     payload?: EventPayloadArgs[Key]
@@ -366,6 +373,9 @@ function ipcInvoke<Key extends keyof EventPayloadMapping>(
     return electron.ipcRenderer.invoke(key as string, payload as any);
 }
 
+/**
+ * Subscribe to an IPC event and provide an unsubscribe callback.
+ */
 function ipcOn<Key extends keyof EventPayloadMapping>(
     key: Key,
     callback: (payload: EventPayloadMapping[Key]) => void

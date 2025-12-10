@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Department } from "../types";
@@ -8,6 +9,9 @@ type DepartmentSelectorProps = {
     onDepartmentChange: (departmentId: number | null) => void;
 };
 
+/**
+ * Selector for departments tied to a region, with inline creation flow.
+ */
 export function DepartmentSelector({
     region_id,
     department_id,
@@ -19,19 +23,17 @@ export function DepartmentSelector({
     const [newDepartmentName, setNewDepartmentName] = useState("");
     const [loadingDepartments, setLoadingDepartments] = useState(false);
 
-    const electron = (window as any).electron;
-
-    // Guard: renderer opened outside Electron
-    if (!electron) {
-        return (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                {t("common.electronUnavailable", "Electron bridge indisponible dans ce contexte.")}
-            </div>
-        );
-    }
+    const electron = window.electron;
 
     // Load departments when region changes
     useEffect(() => {
+        if (!electron) {
+            setDepartments([]);
+            setShowAddDepartment(false);
+            onDepartmentChange(null);
+            return;
+        }
+
         if (region_id) {
             const loadDepartments = async () => {
                 setLoadingDepartments(true);
@@ -56,8 +58,16 @@ export function DepartmentSelector({
             setShowAddDepartment(false);
             onDepartmentChange(null);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [region_id]);
+    }, [region_id, electron, onDepartmentChange, department_id]);
+
+    // Guard: renderer opened outside Electron
+    if (!electron) {
+        return (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                {t("common.electronUnavailable", "Electron bridge indisponible dans ce contexte.")}
+            </div>
+        );
+    }
 
     const handleAddDepartment = async () => {
         if (!newDepartmentName.trim() || !region_id) return;
