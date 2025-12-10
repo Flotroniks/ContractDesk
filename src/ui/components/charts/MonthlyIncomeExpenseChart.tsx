@@ -153,7 +153,9 @@ export function MonthlyIncomeExpenseChart({ data, colorScale, incomeLabel, expen
                     .text((d) => d.propertyName);
             });
 
-        return () => svg.selectAll("*").remove();
+        return () => {
+            svg.selectAll("*").remove();
+        };
     }, [colorScale, data, expenseLabel, incomeLabel, width]);
 
     return (

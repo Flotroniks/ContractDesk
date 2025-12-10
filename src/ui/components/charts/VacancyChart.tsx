@@ -121,7 +121,9 @@ export function VacancyChart({ data, colorScale, vacancyLabel }: Props) {
                     .text((d) => d.propertyName);
             });
 
-        return () => svg.selectAll("*").remove();
+        return () => {
+            svg.selectAll("*").remove();
+        };
     }, [colorScale, data, vacancyLabel, width]);
 
     return (

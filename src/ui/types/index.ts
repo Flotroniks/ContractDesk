@@ -60,12 +60,12 @@ export type ElectronApi = {
     createProperty: (payload: {
         userId: number;
         name: string;
-        address?: string;
+        address?: string | null;
         city_id?: number | null;
         region_id?: number | null;
         country_id?: number | null;
         department_id?: number | null;
-        type?: string;
+        type?: string | null;
         surface?: number | null;
         baseRent?: number | null;
         baseCharges?: number | null;
@@ -75,12 +75,12 @@ export type ElectronApi = {
         id: number;
         userId: number;
         name?: string;
-        address?: string;
+        address?: string | null;
         city_id?: number | null;
         region_id?: number | null;
         country_id?: number | null;
         department_id?: number | null;
-        type?: string;
+        type?: string | null;
         surface?: number | null;
         baseRent?: number | null;
         baseCharges?: number | null;

@@ -131,7 +131,9 @@ export function CreditChart({ data, colorScale, creditLabel }: Props) {
                     .text((d) => d.propertyName);
             });
 
-        return () => svg.selectAll("*").remove();
+        return () => {
+            svg.selectAll("*").remove();
+        };
     }, [colorScale, creditLabel, data, width]);
 
     return (
