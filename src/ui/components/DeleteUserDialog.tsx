@@ -1,5 +1,4 @@
 import { useState } from 'react';
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from 'react-i18next';
 
 type DeleteUserDialogProps = {
@@ -9,9 +8,6 @@ type DeleteUserDialogProps = {
   onCancel: () => void;
 };
 
-/**
- * Lightweight confirmation modal for deleting a user profile and its data.
- */
 export function DeleteUserDialog({
   username,
   propertiesCount,

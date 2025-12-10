@@ -30,15 +30,15 @@ export interface Property {
     id: number;
     user_id: number;
     name: string;
-    address?: string | null;
-    city_id?: number | null;
-    region_id?: number | null;
-    country_id?: number | null;
-    department_id?: number | null;
-    type?: string | null;
-    surface?: number | null;
-    base_rent?: number | null;
-    base_charges?: number | null;
+    address?: string;
+    city_id?: number;
+    region_id?: number;
+    country_id?: number;
+    department_id?: number;
+    type?: string;
+    surface?: number;
+    base_rent?: number;
+    base_charges?: number;
     status: string;
     purchase_price?: number | null;
 }
@@ -121,7 +121,7 @@ type EventPayloadArgs = {
     statistics: void;
     getStaticData: void;
     listUsers: void;
-    createUser: { username: string; password?: string | undefined };
+    createUser: { username: string; password?: string };
     updateUser: { id: number; username: string };
     deleteUser: { id: number; password: string };
     listProperties: { userId: number };
@@ -136,51 +136,49 @@ type EventPayloadArgs = {
     createProperty: {
         userId: number;
         name: string;
-        address?: string | null | undefined;
-        city_id?: number | null | undefined;
-        region_id?: number | null | undefined;
-        country_id?: number | null | undefined;
-        department_id?: number | null | undefined;
-        state?: string | undefined;
-        type?: string | undefined;
-        surface?: number | null | undefined;
-        baseRent?: number | null | undefined;
-        baseCharges?: number | null | undefined;
-        purchase_price?: number | null | undefined;
+        address?: string;
+        city_id?: number | null;
+        region_id?: number | null;
+        country_id?: number | null;
+        department_id?: number | null;
+        type?: string;
+        surface?: number | null;
+        baseRent?: number | null;
+        baseCharges?: number | null;
+        purchase_price?: number | null;
     };
     updateProperty: {
         id: number;
         userId: number;
-        name?: string | undefined;
-        address?: string | null | undefined;
-        city_id?: number | null | undefined;
-        region_id?: number | null | undefined;
-        country_id?: number | null | undefined;
-        department_id?: number | null | undefined;
-        state?: string | undefined;
-        type?: string | undefined;
-        surface?: number | null | undefined;
-        baseRent?: number | null | undefined;
-        baseCharges?: number | null | undefined;
-        purchase_price?: number | null | undefined;
-        status?: string | undefined;
+        name?: string;
+        address?: string;
+        city_id?: number | null;
+        region_id?: number | null;
+        country_id?: number | null;
+        department_id?: number | null;
+        type?: string;
+        surface?: number | null;
+        baseRent?: number | null;
+        baseCharges?: number | null;
+        purchase_price?: number | null;
+        status?: string;
     };
     listCreditsByProperty: { propertyId: number };
     getCreditByProperty: { propertyId: number };
     saveCredit: {
-        id?: number | undefined;
+        id?: number;
         user_id: number;
         property_id: number;
-        credit_type?: string | null | undefined;
-        down_payment?: number | null | undefined;
-        principal?: number | null | undefined;
-        annual_rate?: number | null | undefined;
-        duration_months?: number | null | undefined;
-        start_date?: string | null | undefined;
-        insurance_monthly?: number | null | undefined;
-        notes?: string | null | undefined;
-        is_active?: number | boolean | undefined;
-        refinance_from_id?: number | null | undefined;
+        credit_type?: string | null;
+        down_payment?: number | null;
+        principal?: number | null;
+        annual_rate?: number | null;
+        duration_months?: number | null;
+        start_date?: string | null;
+        insurance_monthly?: number | null;
+        notes?: string | null;
+        is_active?: number | boolean;
+        refinance_from_id?: number | null;
     };
     deleteCredit: { id: number };
 }
@@ -215,7 +213,6 @@ type EventPayloadMapping = {
     getCreditByProperty: Credit | null;
     saveCredit: Credit;
     deleteCredit: { success: boolean };
-    getMonthlyStats?: Array<{ month: number; income: number; expense: number; credit: number; cashflow: number; vacancy: number }>;
 }
 
 interface Window {
@@ -242,6 +239,5 @@ interface Window {
         saveCredit: (payload: Partial<Credit> & { property_id: number; refinance_from_id?: number | null }) => Promise<Credit>;
         deleteCredit: (id: number) => Promise<{ success: boolean }>;
         exportFinanceExcel?: (propertyId: number, year?: number, purchase_price?: number | null) => Promise<{ path: string }>;
-        getMonthlyStats?: (propertyId: number, year?: number) => Promise<Array<{ month: number; income: number; expense: number; credit: number; cashflow: number; vacancy: number }>>;
     }
 }

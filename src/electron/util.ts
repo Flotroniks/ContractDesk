@@ -18,58 +18,55 @@ dotenv.config();
 const PORT = process.env.PORT;
 if (!PORT) throw new Error("PORT env variable is not set");
 
-/**
- * IPC request payloads keyed by channel. Keep in sync with renderer bridge and main handlers.
- */
 type EventPayloadArgs = {
     statistics: void;
     getStaticData: void;
     listUsers: void;
-    createUser: { username: string; password?: string | undefined };
+    createUser: { username: string; password?: string };
     updateUser: { id: number; username: string };
     deleteUser: { id: number; password: string };
     listProperties: { userId: number };
     createProperty: {
         userId: number;
         name: string;
-        address?: string | null | undefined;
-        city_id?: number | null | undefined;
-        department_id?: number | null | undefined;
-        region_id?: number | null | undefined;
-        state?: string | undefined;
-        country_id?: number | null | undefined;
-        type?: string | undefined;
-        surface?: number | null | undefined;
-        baseRent?: number | null | undefined;
-        baseCharges?: number | null | undefined;
-        purchase_price?: number | null | undefined;
+        address?: string;
+        city_id?: number | null;
+        department_id?: number | null;
+        region_id?: number | null;
+        state?: string;
+        country_id?: number | null;
+        type?: string;
+        surface?: number | null;
+        baseRent?: number | null;
+        baseCharges?: number | null;
+        purchase_price?: number | null;
     };
     updateProperty: {
         id: number;
         userId: number;
-        name?: string | undefined;
-        address?: string | null | undefined;
-        city_id?: number | null | undefined;
-        department_id?: number | null | undefined;
-        region_id?: number | null | undefined;
-        state?: string | undefined;
-        country_id?: number | null | undefined;
-        type?: string | undefined;
-        surface?: number | null | undefined;
-        baseRent?: number | null | undefined;
-        baseCharges?: number | null | undefined;
-        purchase_price?: number | null | undefined;
-        status?: string | undefined;
+        name?: string;
+        address?: string;
+        city_id?: number | null;
+        department_id?: number | null;
+        region_id?: number | null;
+        state?: string;
+        country_id?: number | null;
+        type?: string;
+        surface?: number | null;
+        baseRent?: number | null;
+        baseCharges?: number | null;
+        purchase_price?: number | null;
+        status?: string;
     };
     listCountries: void;
     listRegions: { countryId: number };
-    listCities: { regionId?: number | undefined; departmentId?: number | null | undefined };
-    listDepartments: { regionId?: number | undefined };
-    createCountry: { name: string; code?: string | null | undefined };
+    listCities: { regionId?: number; departmentId?: number };
+    listDepartments: { regionId?: number };
+    createCountry: { name: string; code?: string | null };
     createRegion: { countryId: number; name: string };
-    createCity: { regionId?: number | undefined; countryId?: number | undefined; departmentId?: number | null | undefined; name: string };
-    createDepartment: { regionId?: number | undefined; name: string };
-    listExpensesByProperty: { propertyId: number; year?: number | undefined };
+    createCity: { regionId?: number; countryId?: number; departmentId?: number | null; name: string };
+    createDepartment: { regionId?: number; name: string };
+    listExpensesByProperty: { propertyId: number; year?: number };
     createExpense: {
         property_id: number;
         date: string;
@@ -81,15 +78,15 @@ type EventPayloadArgs = {
     };
     updateExpense: {
         id: number;
-        date?: string | undefined;
-        category?: string | undefined;
-        description?: string | null | undefined;
-        amount?: number | undefined;
-        is_recurring?: boolean | undefined;
-        frequency?: string | null | undefined;
+        date?: string;
+        category?: string;
+        description?: string | null;
+        amount?: number;
+        is_recurring?: boolean;
+        frequency?: string | null;
     };
     deleteExpense: { id: number };
-    listIncomesByProperty: { propertyId: number; year?: number | undefined };
+    listIncomesByProperty: { propertyId: number; year?: number };
     createIncome: {
         property_id: number;
         lease_id?: number | null;
@@ -100,11 +97,11 @@ type EventPayloadArgs = {
     };
     updateIncome: {
         id: number;
-        lease_id?: number | null | undefined;
-        date?: string | undefined;
-        amount?: number | undefined;
-        payment_method?: string | null | undefined;
-        notes?: string | null | undefined;
+        lease_id?: number | null;
+        date?: string;
+        amount?: number;
+        payment_method?: string | null;
+        notes?: string | null;
     };
     deleteIncome: { id: number };
     listCreditsByProperty: { propertyId: number };
@@ -114,30 +111,26 @@ type EventPayloadArgs = {
         user_id: number;
         property_id: number;
         credit_type?: string | null;
-        down_payment?: number | null | undefined;
-        principal?: number | null | undefined;
-        annual_rate?: number | null | undefined;
-        duration_months?: number | null | undefined;
-        start_date?: string | null | undefined;
-        insurance_monthly?: number | null | undefined;
-        notes?: string | null | undefined;
-        is_active?: number | boolean | undefined;
-        refinance_from_id?: number | null | undefined;
+        down_payment?: number | null;
+        principal?: number | null;
+        annual_rate?: number | null;
+        duration_months?: number | null;
+        start_date?: string | null;
+        insurance_monthly?: number | null;
+        notes?: string | null;
+        is_active?: number | boolean;
+        refinance_from_id?: number | null;
     };
     deleteCredit: { id: number };
     listCategories: { type: "expense" | "income" };
     upsertCategory: { type: "expense" | "income"; name: string };
     listAmortizationsByProperty: { propertyId: number };
-    listCashflowByProperty: { propertyId: number; year?: number | undefined };
-    getMonthlyStats: { propertyId: number; year?: number | undefined };
-    getPropertyAnnualSummary: { propertyId: number; year?: number | undefined; purchase_price?: number | null | undefined };
-    listVacancyMonths: { propertyId: number; year?: number | undefined };
-    exportFinanceExcel: { propertyId: number; year?: number | undefined; purchase_price?: number | null | undefined };
+    listCashflowByProperty: { propertyId: number; year?: number };
+    getPropertyAnnualSummary: { propertyId: number; year?: number; purchase_price?: number | null };
+    listVacancyMonths: { propertyId: number; year?: number };
+    exportFinanceExcel: { propertyId: number; year?: number; purchase_price?: number | null };
 };
 
-/**
- * IPC response payloads keyed by channel. Mirrors EventPayloadArgs channels to shape replies.
- */
 type EventPayloadMapping = {
     statistics: { cpuUsage: number; ramUsage: number; storageData: number };
     getStaticData: { totalStorage: number; cpuModel: string; totalMemoryGB: number };
@@ -149,17 +142,17 @@ type EventPayloadMapping = {
         id: number;
         user_id: number;
         name: string;
-        address?: string | null;
+        address?: string;
         city_id?: number | null;
         department_id?: number | null;
         region_id?: number | null;
-        state?: string | null;
+        state?: string;
         country_id?: number | null;
-        type?: string | null;
-        surface?: number | null;
-        base_rent?: number | null;
-        base_charges?: number | null;
-        purchase_price?: number | null;
+        type?: string;
+        surface?: number;
+        base_rent?: number;
+        base_charges?: number;
+        purchase_price?: number;
         status: string;
         created_at: string;
     }>;
@@ -167,17 +160,17 @@ type EventPayloadMapping = {
         id: number;
         user_id: number;
         name: string;
-        address?: string | null;
+        address?: string;
         city_id?: number | null;
         department_id?: number | null;
         region_id?: number | null;
-        state?: string | null;
+        state?: string;
         country_id?: number | null;
-        type?: string | null;
-        surface?: number | null;
-        base_rent?: number | null;
-        base_charges?: number | null;
-        purchase_price?: number | null;
+        type?: string;
+        surface?: number;
+        base_rent?: number;
+        base_charges?: number;
+        purchase_price?: number;
         status: string;
         created_at: string;
     };
@@ -185,17 +178,17 @@ type EventPayloadMapping = {
         id: number;
         user_id: number;
         name: string;
-        address?: string | null;
+        address?: string;
         city_id?: number | null;
         department_id?: number | null;
         region_id?: number | null;
-        state?: string | null;
+        state?: string;
         country_id?: number | null;
-        type?: string | null;
-        surface?: number | null;
-        base_rent?: number | null;
-        base_charges?: number | null;
-        purchase_price?: number | null;
+        type?: string;
+        surface?: number;
+        base_rent?: number;
+        base_charges?: number;
+        purchase_price?: number;
         status: string;
         created_at: string;
     };
@@ -223,7 +216,6 @@ type EventPayloadMapping = {
     upsertCategory: CategoryRow;
     listAmortizationsByProperty: AmortizationRow[];
     listCashflowByProperty: Array<{ month: number; income: number; expenses: number; credit: number; cashflow: number }>;
-    getMonthlyStats: Array<{ month: number; income: number; expense: number; credit: number; cashflow: number; vacancy: number }>;
     getPropertyAnnualSummary: {
         total_rents_received: number;
         total_expenses: number;
@@ -237,20 +229,12 @@ type EventPayloadMapping = {
     exportFinanceExcel: { path: string };
 };
 
-/**
- * Check whether the app is running in development mode.
- * @returns {boolean} True when NODE_ENV is set to development.
- */
+// Checks if you are in development mode
 export function isDev(): boolean {
     return process.env.NODE_ENV == "development";
 }
 
-/**
- * Strongly typed wrapper for ipcMain.handle that validates the sender frame and binds payload/response types per channel.
- * @template {keyof EventPayloadMapping} Key
- * @param {Key} key IPC channel key from EventPayloadMapping.
- * @param {(payload: EventPayloadArgs[Key]) => EventPayloadMapping[Key] | Promise<EventPayloadMapping[Key]>} handler Business handler returning a response (sync or async).
- */
+// Making IPC Typesafe
 export function ipcMainHandle<Key extends keyof EventPayloadMapping>(
     key: Key,
     handler: (payload: EventPayloadArgs[Key]) => EventPayloadMapping[Key] | Promise<EventPayloadMapping[Key]>
@@ -262,24 +246,12 @@ export function ipcMainHandle<Key extends keyof EventPayloadMapping>(
     });
 }
 
-/**
- * Send a typed IPC event from the main process to renderer webContents.
- * @template {keyof EventPayloadMapping} Key
- * @param {Key} key IPC channel key.
- * @param {WebContents} webContents Target renderer webContents.
- * @param {EventPayloadMapping[Key]} payload Data to send, shaped by EventPayloadMapping.
- */
 export function ipcWebContentsSend<Key extends keyof EventPayloadMapping>(key: Key, webContents: WebContents, payload: EventPayloadMapping[Key]) {
     webContents.send(key as string, payload);
 }
 
 export type { EventPayloadArgs, EventPayloadMapping };
 
-/**
- * Validate that an IPC event originates from the trusted renderer URL (dev server or packaged UI).
- * @param {WebFrameMain} frame Sender frame metadata.
- * @throws Error when the frame URL does not match the expected UI path, blocking malicious events.
- */
 export function validateEventFrame(frame: WebFrameMain) {
     if (isDev() && new URL(frame.url).host === `localhost:${PORT}`) return;
 

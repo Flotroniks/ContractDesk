@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { City } from "../types";
@@ -11,9 +10,6 @@ export type CitySelectorProps = {
     onCityChange: (cityId: number | null) => void;
 };
 
-/**
- * Cascading city selector that loads cities based on region/department and allows creation.
- */
 export function CitySelector({
     country_id,
     region_id,
@@ -27,17 +23,19 @@ export function CitySelector({
     const [newCityName, setNewCityName] = useState("");
     const [loadingCities, setLoadingCities] = useState(false);
 
-    const electron = window.electron;
+    const electron = (window as any).electron;
+
+    // Guard: renderer opened outside Electron
+    if (!electron) {
+        return (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                {t("common.electronUnavailable", "Electron bridge indisponible dans ce contexte.")}
+            </div>
+        );
+    }
 
     // Load cities when region or department changes
     useEffect(() => {
-        if (!electron) {
-            setCities([]);
-            setShowAddCity(false);
-            onCityChange(null);
-            return;
-        }
-
         if (region_id) {
             const loadCities = async () => {
                 setLoadingCities(true);
@@ -60,16 +58,8 @@ export function CitySelector({
             setShowAddCity(false);
             onCityChange(null);
         }
-    }, [region_id, department_id, electron, onCityChange, city_id]);
-
-    // Guard: renderer opened outside Electron
-    if (!electron) {
-        return (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                {t("common.electronUnavailable", "Electron bridge indisponible dans ce contexte.")}
-            </div>
-        );
-    }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [region_id, department_id]);
 
     const handleAddCity = async () => {
         if (!newCityName.trim() || !region_id || !country_id || !department_id) return;

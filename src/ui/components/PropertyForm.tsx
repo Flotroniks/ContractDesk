@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from "react-i18next";
 import type { PropertyDraft } from "../types";
 import { propertyTypes } from "../constants/propertyTypes";
@@ -13,9 +12,6 @@ type PropertyFormProps = {
     onCreate: () => void;
 };
 
-/**
- * Form for creating a property, handling location selectors and basic price inputs.
- */
 export function PropertyForm({ form, creating, onChange, onCreate }: PropertyFormProps) {
     const { t } = useTranslation();
 

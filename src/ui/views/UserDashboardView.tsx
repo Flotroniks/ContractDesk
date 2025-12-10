@@ -1,12 +1,9 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from "react-i18next";
 import type { UserProfile, PropertyDraft, TabKey, Property, ElectronApi } from "../types";
 import { PropertyForm } from "../components/PropertyForm";
 import { PropertyCard } from "../components/PropertyCard";
 import { PropertyCreditsCard } from "../components/PropertyCreditsCard";
 import { FinancesHub } from "../components/FinancesHub";
-import { StatsView } from "../components/StatsView";
-import { PortfolioDashboard } from "../components/PortfolioDashboard";
 
 type UserDashboardViewProps = {
     user: UserProfile;
@@ -34,12 +31,8 @@ const tabs: Array<{ key: TabKey }> = [
     { key: "dashboard" },
     { key: "finances" },
     { key: "properties" },
-    { key: "stats" },
 ];
 
-/**
- * Main authenticated view for a user combining properties, finances, and stats tabs.
- */
 export function UserDashboardView({
     user,
     activeTab,
@@ -144,10 +137,12 @@ export function UserDashboardView({
                     </section>
                 ) : activeTab === "finances" ? (
                     <FinancesHub electronApi={electronApi} properties={properties} />
-                ) : activeTab === "stats" ? (
-                    <StatsView electronApi={electronApi} properties={properties} />
                 ) : (
-                    <PortfolioDashboard electronApi={electronApi} properties={properties} />
+                    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+                        <div className="text-center text-slate-500 py-12">
+                            {t("dashboard.comingSoon", { tab: t(`dashboard.tabs.${activeTab}`) })}
+                        </div>
+                    </div>
                 )}
             </div>
         </div>

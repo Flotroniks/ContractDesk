@@ -5,8 +5,6 @@
         "module": "NodeNext",
         "outDir": "../../dist-electron",
         "skipLibCheck": true,
-        "exactOptionalPropertyTypes": true,
-        "isolatedModules": true,
         // add global types
         "types": [
             "../../types"

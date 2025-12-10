@@ -1,12 +1,8 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useState } from "react";
 import type { UserProfile } from "../types";
 import { useUsers } from "./useUsers";
 import { useUserEditing } from "./useUserEditing";
 
-/**
- * High-level orchestrator for profile creation/selection/editing flows.
- */
 export function useUserManagement() {
     const { electronApi, users, loading, error, creating, createUser, updateUser, deleteUser, clearError } = useUsers();
     const [newUserName, setNewUserName] = useState("");
@@ -27,9 +23,6 @@ export function useUserManagement() {
         toggleMenu,
     } = useUserEditing();
 
-    /**
-     * Create a profile from local state and move selection to it.
-     */
     async function handleCreateUser() {
         const created = await createUser(newUserName, newUserPassword);
         if (created) {
@@ -41,9 +34,6 @@ export function useUserManagement() {
         return created;
     }
 
-    /**
-     * Persist a username edit and resync selected/entered users.
-     */
     async function handleSaveEdit(id: number) {
         const updated = await updateUser(id, editingValue);
         if (updated) {
@@ -54,9 +44,6 @@ export function useUserManagement() {
         return updated;
     }
 
-    /**
-     * Switch the active/entered profile, used by UI navigation.
-     */
     function handleEnterUserProfile(user: UserProfile | null) {
         setEnteredUser(user);
         setSelectedUser(user);
@@ -73,9 +60,6 @@ export function useUserManagement() {
         setNewUserPassword("");
     }
 
-    /**
-     * Delete a profile then clear selection if it was active.
-     */
     async function handleDeleteUser(id: number, password: string) {
         const result = await deleteUser(id, password);
         if (result) {

@@ -6,10 +6,6 @@ import { ipcWebContentsSend } from "./util.js";
 
 const POLLING_INTERVAL = 500;
 
-/**
- * Periodically gather CPU, RAM, and disk usage and push them to the renderer.
- * @param {BrowserWindow} mainWindow Window whose web contents receive the stats.
- */
 export function pollResources(mainWindow: BrowserWindow) {
     setInterval(async () => {
         const cpuUsage = await getCPUUsage();
@@ -20,10 +16,6 @@ export function pollResources(mainWindow: BrowserWindow) {
     }, POLLING_INTERVAL);
 }
 
-/**
- * Snapshot system specs useful for the statistics panel.
- * @returns {{ totalStorage: number; cpuModel: string; totalMemoryGB: number }} Static system information.
- */
 export function getStaticData() {
     const totalStorage = getStorageData().total;
     const cpuModel = os.cpus()[0].model;

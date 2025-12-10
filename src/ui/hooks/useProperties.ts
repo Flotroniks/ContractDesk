@@ -1,11 +1,7 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useState, useEffect, useCallback } from "react";
 import type { Property, PropertyDraft, ElectronApi } from "../types";
 import { parseNumberInput } from "../utils/numberParser";
 
-/**
- * CRUD helper hook for properties scoped to a user, with validation and error messaging.
- */
 export function useProperties(electronApi: ElectronApi | null, userId: number | null) {
     const [properties, setProperties] = useState<Property[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -32,9 +28,6 @@ export function useProperties(electronApi: ElectronApi | null, userId: number | 
         void fetchProperties();
     }, [electronApi, userId, fetchProperties]);
 
-    /**
-     * Validate and persist a property draft, then prepend it to state.
-     */
     async function createProperty(draft: PropertyDraft): Promise<Property | null> {
         if (!electronApi || !userId) return null;
 
@@ -69,24 +62,20 @@ export function useProperties(electronApi: ElectronApi | null, userId: number | 
         setCreating(true);
         setError(null);
         try {
-            const payload: Parameters<ElectronApi["createProperty"]>[0] = {
+            const created = await electronApi.createProperty({
                 userId,
                 name,
-            };
-
-            const address = draft.address.trim();
-            if (address) payload.address = address;
-            if (draft.city_id !== undefined) payload.city_id = draft.city_id ?? null;
-            if (draft.region_id !== undefined) payload.region_id = draft.region_id ?? null;
-            if (draft.country_id !== undefined) payload.country_id = draft.country_id ?? null;
-            if (draft.department_id !== undefined) payload.department_id = draft.department_id ?? null;
-            if (draft.type) payload.type = draft.type;
-            if (surface.value !== null) payload.surface = surface.value;
-            if (baseRent.value !== null) payload.baseRent = baseRent.value;
-            if (baseCharges.value !== null) payload.baseCharges = baseCharges.value;
-            if (purchasePrice.value !== null) payload.purchase_price = purchasePrice.value;
-
-            const created = await electronApi.createProperty(payload);
+                address: draft.address.trim() || undefined,
+                city_id: draft.city_id || undefined,
+                region_id: draft.region_id || undefined,
+                country_id: draft.country_id || undefined,
+                department_id: draft.department_id || undefined,
+                type: draft.type,
+                surface: surface.value,
+                baseRent: baseRent.value,
+                baseCharges: baseCharges.value,
+                purchase_price: purchasePrice.value,
+            });
             setProperties(prev => [created, ...prev]);
             return created;
         } catch (err: unknown) {
@@ -103,9 +92,6 @@ export function useProperties(electronApi: ElectronApi | null, userId: number | 
         }
     }
 
-    /**
-     * Validate and persist edits to an existing property.
-     */
     async function updateProperty(
         id: number,
         draft: PropertyDraft & { status: string }
@@ -141,26 +127,22 @@ export function useProperties(electronApi: ElectronApi | null, userId: number | 
         }
 
         try {
-            const payload: Parameters<ElectronApi["updateProperty"]>[0] = {
+            const updated = await electronApi.updateProperty({
                 id,
                 userId,
                 name,
+                address: draft.address.trim(),
+                city_id: draft.city_id || undefined,
+                region_id: draft.region_id || undefined,
+                country_id: draft.country_id || undefined,
+                department_id: draft.department_id || undefined,
+                type: draft.type,
+                surface: surface.value,
+                baseRent: baseRent.value,
+                baseCharges: baseCharges.value,
+                purchase_price: purchasePrice.value,
                 status: draft.status,
-            };
-
-            const address = draft.address.trim();
-            if (address) payload.address = address;
-            if (draft.city_id !== undefined) payload.city_id = draft.city_id ?? null;
-            if (draft.region_id !== undefined) payload.region_id = draft.region_id ?? null;
-            if (draft.country_id !== undefined) payload.country_id = draft.country_id ?? null;
-            if (draft.department_id !== undefined) payload.department_id = draft.department_id ?? null;
-            if (draft.type) payload.type = draft.type;
-            if (surface.value !== null) payload.surface = surface.value;
-            if (baseRent.value !== null) payload.baseRent = baseRent.value;
-            if (baseCharges.value !== null) payload.baseCharges = baseCharges.value;
-            if (purchasePrice.value !== null) payload.purchase_price = purchasePrice.value;
-
-            const updated = await electronApi.updateProperty(payload);
+            });
             setProperties(prev => prev.map(p => (p.id === id ? updated : p)));
             return updated;
         } catch (err: unknown) {
@@ -175,9 +157,6 @@ export function useProperties(electronApi: ElectronApi | null, userId: number | 
         }
     }
 
-    /**
-     * Toggle archived/active status on a property and sync local state.
-     */
     async function toggleArchive(property: Property): Promise<boolean> {
         if (!electronApi || !userId) return false;
         const newStatus = property.status === "archived" ? "active" : "archived";

@@ -1,8 +1,7 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useCallback, useEffect, useState } from "react";
-import type { AnnualSummary, CashflowRow, ElectronApi } from "../types";
+import type { AnnualSummary, CashflowRow } from "../types";
 
-export function useFinancialDashboard(electronApi: ElectronApi | null, propertyId: number | null, initialYear: number) {
+export function useFinancialDashboard(electronApi: any, propertyId: number | null, initialYear: number) {
     const [year, setYear] = useState<number>(initialYear);
     const [summary, setSummary] = useState<AnnualSummary | null>(null);
     const [cashflow, setCashflow] = useState<CashflowRow[]>([]);
@@ -10,9 +9,6 @@ export function useFinancialDashboard(electronApi: ElectronApi | null, propertyI
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    /**
-     * Load summary, cashflow, and vacancy metrics for the selected property/year.
-     */
     const fetchData = useCallback(async () => {
         if (!electronApi || !propertyId) return;
         setLoading(true);

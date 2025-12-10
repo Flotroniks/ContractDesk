@@ -1,13 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type RefObject } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type FormEvent, type RefObject, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
-import type { TFunction } from "i18next";
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import type { ElectronApi, Property } from "../types";
 import { useFinancialDashboard } from "../hooks/useFinancialDashboard";
 import { useExpenses } from "../hooks/useExpenses";
 import { useIncomes } from "../hooks/useIncomes";
-import type { ExpenseForm } from "../hooks/useExpenses";
-import type { IncomeForm } from "../hooks/useIncomes";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from({ length: 5 }, (_, idx) => currentYear - 2 + idx);
@@ -18,15 +14,14 @@ type FinancesHubProps = {
     initialPropertyId?: number | null;
 };
 
-/**
- * Central finance workspace combining dashboard metrics, expenses, and incomes for a property.
- */
 export function FinancesHub({ electronApi, properties, initialPropertyId = null }: FinancesHubProps) {
     const { t } = useTranslation();
     const activeProperties = useMemo(() => properties.filter((p) => p.status !== "archived"), [properties]);
     const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(initialPropertyId ?? null);
     const [year, setYear] = useState<number>(currentYear);
     const [panel, setPanel] = useState<"expenses" | "incomes">("expenses");
+    const selectedProperty = useMemo(() => activeProperties.find((p) => p.id === selectedPropertyId) ?? null, [activeProperties, selectedPropertyId]);
+
     useEffect(() => {
         if (!selectedPropertyId && activeProperties.length > 0) {
             setSelectedPropertyId(activeProperties[0].id);
@@ -79,9 +74,9 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
         }
 
         if (target === "expenses") {
-            expenseState.setForm((prev: ExpenseForm) => ({ ...prev, amount: normalized }));
+            expenseState.setForm((prev: any) => ({ ...prev, amount: normalized }));
         } else {
-            incomeState.setForm((prev: IncomeForm) => ({ ...prev, amount: normalized }));
+            incomeState.setForm((prev: any) => ({ ...prev, amount: normalized }));
         }
 
         setPanel(target);
@@ -422,7 +417,7 @@ function StatCard({ label, value, suffix, tone }: StatCardProps) {
     );
 }
 
-function StatusBadge({ income, expected, t }: { income: number; expected: number; t: TFunction<"translation", undefined> }) {
+function StatusBadge({ income, expected, t }: { income: number; expected: number; t: (key: string) => string }) {
     const status = computePaymentStatus(income, expected);
     const tone = status === "paid" ? "bg-emerald-50 text-emerald-700 border-emerald-100" : status === "partial" ? "bg-amber-50 text-amber-700 border-amber-100" : "bg-red-50 text-red-700 border-red-100";
     const label =
@@ -440,7 +435,7 @@ function CategoryBreakdownCards({
     t,
 }: {
     breakdown: Array<{ category: string; total: number }>;
-    t: TFunction<"translation", undefined>;
+    t: (key: string, options?: Record<string, unknown>) => string;
 }) {
     return (
         <div className="space-y-2">
@@ -470,7 +465,7 @@ function MonthDetailModal({
     expenses: ExpensesProps["expenses"];
     cashflow: { income: number; expenses: number; credit: number; cashflow: number } | null;
     onClose: () => void;
-    t: TFunction<"translation", undefined>;
+    t: (key: string, options?: Record<string, unknown>) => string;
 }) {
     const incomeTotal = incomes.reduce((sum, i) => sum + (i.amount ?? 0), 0);
     const expenseTotal = expenses.reduce((sum, e) => sum + (e.amount ?? 0), 0);
@@ -530,7 +525,7 @@ function MonthList({
     title: string;
     rows: Array<{ date: string; amount: number; category?: string | null; description?: string | null; payment_method?: string | null }>;
     type: "income" | "expense";
-    t: TFunction<"translation", undefined>;
+    t: (key: string, options?: Record<string, unknown>) => string;
 }) {
     return (
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-3">
@@ -588,7 +583,7 @@ function computePaymentStatus(income: number, expected: number): "paid" | "parti
 
 type ExpensesProps = ReturnType<typeof useExpenses> & {
     onAmountChange: (value: string) => void;
-    amountInputRef?: RefObject<HTMLInputElement | null>;
+    amountInputRef?: RefObject<HTMLInputElement>;
 };
 
 function ExpensesPanel({
@@ -764,7 +759,7 @@ function ExpensesPanel({
 
 type IncomesProps = ReturnType<typeof useIncomes> & {
     onAmountChange: (value: string) => void;
-    amountInputRef?: RefObject<HTMLInputElement | null>;
+    amountInputRef?: RefObject<HTMLInputElement>;
 };
 
 function IncomesPanel({ incomes, loading, saving, error, form, setForm, editingId, startEdit, submitIncome, deleteIncome, totals, onAmountChange, amountInputRef }: IncomesProps) {

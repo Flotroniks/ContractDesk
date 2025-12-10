@@ -1,9 +1,5 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from "react-i18next";
 
-/**
- * Minimal toggle between French and English locales using i18next.
- */
 export function LanguageSwitcher() {
     const { i18n, t } = useTranslation();
     const current = i18n.language?.startsWith("en") ? "en" : "fr";

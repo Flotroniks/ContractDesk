@@ -1,6 +1,5 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Category, ElectronApi, Expense } from "../types";
+import type { Category, Expense } from "../types";
 import { parseNumberInput } from "../utils/numberParser";
 
 export type ExpenseForm = {
@@ -21,7 +20,7 @@ const emptyExpenseForm: ExpenseForm = {
     frequency: "",
 };
 
-export function useExpenses(electronApi: ElectronApi | null, propertyId: number | null, initialYear: number) {
+export function useExpenses(electronApi: any, propertyId: number | null, initialYear: number) {
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [year, setYear] = useState<number>(initialYear);
@@ -38,9 +37,6 @@ export function useExpenses(electronApi: ElectronApi | null, propertyId: number 
         setCategories(data);
     }, [electronApi]);
 
-    /**
-     * Load expenses for the selected property/year.
-     */
     const fetchExpenses = useCallback(async () => {
         if (!electronApi?.listExpensesByProperty || !propertyId) return;
         setLoading(true);
@@ -87,9 +83,6 @@ export function useExpenses(electronApi: ElectronApi | null, propertyId: number 
         setEditingId(null);
     }
 
-    /**
-     * Create or update an expense entry with validation.
-     */
     async function submitExpense(id?: number) {
         if (!electronApi || !propertyId) return null;
         const amountParsed = parseNumberInput(form.amount);

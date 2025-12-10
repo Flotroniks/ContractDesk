@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from "react-i18next";
 import type { Property, PropertyDraft } from "../types";
 import { propertyTypes } from "../constants/propertyTypes";
@@ -17,9 +16,6 @@ type PropertyCardProps = {
     onToggleArchive: () => void;
 };
 
-/**
- * Property summary card with inline editing for metadata and status toggles.
- */
 export function PropertyCard({
     property,
     isEditing,

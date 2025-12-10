@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from "react-i18next";
 import type { UserProfile } from "../types";
 import { buildAvatar } from "../utils/avatar";
@@ -19,9 +18,6 @@ type ProfileCardProps = {
     showMenu: boolean;
 };
 
-/**
- * Interactive profile tile with inline rename and contextual actions.
- */
 export function ProfileCard({
     user,
     isActive,

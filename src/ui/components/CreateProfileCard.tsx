@@ -1,5 +1,4 @@
 import { useState } from "react";
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from "react-i18next";
 
 type CreateProfileCardProps = {
@@ -13,9 +12,6 @@ type CreateProfileCardProps = {
     onCreate: () => void;
 };
 
-/**
- * Card that toggles between a CTA and a profile creation form with password validation.
- */
 export function CreateProfileCard({
     showForm,
     newUserName,

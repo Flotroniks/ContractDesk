@@ -95,7 +95,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: "Space Grotesk", "SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif;
+    @apply bg-background text-foreground;
   }
 }

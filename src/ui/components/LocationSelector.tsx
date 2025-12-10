@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from "react-i18next";
 import type { Country, Region } from "../types";
 
@@ -12,9 +11,6 @@ type LocationSelectorProps = {
     onCityChange?: (cityId: number | null) => void;
 };
 
-/**
- * Country/region picker with optional department and city cascading resets.
- */
 export function LocationSelector({
     country_id,
     region_id,
@@ -34,12 +30,19 @@ export function LocationSelector({
     const [loadingCountries, setLoadingCountries] = useState(false);
     const [loadingRegions, setLoadingRegions] = useState(false);
 
-    const electron = window.electron;
+    const electron = (window as any).electron;
+
+    // Guard: renderer opened outside Electron
+    if (!electron) {
+        return (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                {t("common.electronUnavailable", "Electron bridge indisponible dans ce contexte.")}
+            </div>
+        );
+    }
 
     // Load countries on mount
     useEffect(() => {
-        if (!electron) return;
-
         const loadCountries = async () => {
             setLoadingCountries(true);
             try {
@@ -52,20 +55,11 @@ export function LocationSelector({
             }
         };
         void loadCountries();
-    }, [electron]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Load regions when country changes
     useEffect(() => {
-        if (!electron) {
-            setCountries([]);
-            setRegions([]);
-            setShowAddRegion(false);
-            onRegionChange(null);
-            onDepartmentChange?.(null);
-            onCityChange?.(null);
-            return;
-        }
-
         if (country_id) {
             const loadRegions = async () => {
                 setLoadingRegions(true);
@@ -92,16 +86,8 @@ export function LocationSelector({
             onDepartmentChange?.(null);
             onCityChange?.(null);
         }
-    }, [country_id, electron, onRegionChange, region_id, onDepartmentChange, onCityChange]);
-
-    // Guard: renderer opened outside Electron
-    if (!electron) {
-        return (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                {t("common.electronUnavailable", "Electron bridge indisponible dans ce contexte.")}
-            </div>
-        );
-    }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [country_id]);
 
     const handleAddCountry = async () => {
         if (!newCountryName.trim()) return;
