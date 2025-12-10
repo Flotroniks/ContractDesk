@@ -52,24 +52,24 @@ import fs from "fs";
 
 dotenv.config();
 
-type ExpenseUpdatePayload = {
-    date?: string;
-    category?: string;
-    description?: string | null;
-    amount?: number;
-    is_recurring?: boolean;
-    frequency?: string | null;
-};
+type ExpenseUpdatePayload = Partial<{
+    date: string;
+    category: string;
+    description: string | null;
+    amount: number;
+    is_recurring: boolean;
+    frequency: string | null;
+}>;
 
-type IncomeUpdatePayload = {
-    date?: string;
-    lease_id?: number | null;
-    amount?: number;
-    is_recurring?: boolean;
-    frequency?: string | null;
-    payment_method?: string | null;
-    notes?: string | null;
-};
+type IncomeUpdatePayload = Partial<{
+    date: string;
+    lease_id: number | null;
+    amount: number;
+    is_recurring: boolean;
+    frequency: string | null;
+    payment_method: string | null;
+    notes: string | null;
+}>;
 
 type CreditPayloadInput = {
     id?: number;

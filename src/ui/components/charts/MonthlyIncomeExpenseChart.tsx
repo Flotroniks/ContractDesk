@@ -125,8 +125,8 @@ export function MonthlyIncomeExpenseChart({ data, colorScale, incomeLabel, expen
                 return adjusted ?? "#f97316";
             })
             .attr("rx", 3)
-            .on("mouseenter", function (event, d) {
-                showTooltip(event as unknown as MouseEvent, { stat: d.stat, key: d.key, propertyName: d.propertyName });
+            .on("mouseenter", (event: MouseEvent, d: { key: "income" | "expense"; value: number; propertyId: number; propertyName: string; stat: MonthlyStat }) => {
+                showTooltip(event, { stat: d.stat, key: d.key, propertyName: d.propertyName });
             })
             .on("mouseleave", hideTooltip);
 
@@ -153,7 +153,9 @@ export function MonthlyIncomeExpenseChart({ data, colorScale, incomeLabel, expen
                     .text((d) => d.propertyName);
             });
 
-        return () => svg.selectAll("*").remove();
+        return () => {
+            svg.selectAll("*").remove();
+        };
     }, [colorScale, data, expenseLabel, incomeLabel, width]);
 
     return (

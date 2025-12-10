@@ -69,20 +69,24 @@ export function useProperties(electronApi: ElectronApi | null, userId: number | 
         setCreating(true);
         setError(null);
         try {
-            const created = await electronApi.createProperty({
+            const payload: Parameters<ElectronApi["createProperty"]>[0] = {
                 userId,
                 name,
-                address: draft.address.trim() || undefined,
-                city_id: draft.city_id || undefined,
-                region_id: draft.region_id || undefined,
-                country_id: draft.country_id || undefined,
-                department_id: draft.department_id || undefined,
-                type: draft.type,
-                surface: surface.value,
-                baseRent: baseRent.value,
-                baseCharges: baseCharges.value,
-                purchase_price: purchasePrice.value,
-            });
+            };
+
+            const address = draft.address.trim();
+            if (address) payload.address = address;
+            if (draft.city_id !== undefined) payload.city_id = draft.city_id ?? null;
+            if (draft.region_id !== undefined) payload.region_id = draft.region_id ?? null;
+            if (draft.country_id !== undefined) payload.country_id = draft.country_id ?? null;
+            if (draft.department_id !== undefined) payload.department_id = draft.department_id ?? null;
+            if (draft.type) payload.type = draft.type;
+            if (surface.value !== null) payload.surface = surface.value;
+            if (baseRent.value !== null) payload.baseRent = baseRent.value;
+            if (baseCharges.value !== null) payload.baseCharges = baseCharges.value;
+            if (purchasePrice.value !== null) payload.purchase_price = purchasePrice.value;
+
+            const created = await electronApi.createProperty(payload);
             setProperties(prev => [created, ...prev]);
             return created;
         } catch (err: unknown) {
@@ -137,22 +141,26 @@ export function useProperties(electronApi: ElectronApi | null, userId: number | 
         }
 
         try {
-            const updated = await electronApi.updateProperty({
+            const payload: Parameters<ElectronApi["updateProperty"]>[0] = {
                 id,
                 userId,
                 name,
-                address: draft.address.trim(),
-                city_id: draft.city_id || undefined,
-                region_id: draft.region_id || undefined,
-                country_id: draft.country_id || undefined,
-                department_id: draft.department_id || undefined,
-                type: draft.type,
-                surface: surface.value,
-                baseRent: baseRent.value,
-                baseCharges: baseCharges.value,
-                purchase_price: purchasePrice.value,
                 status: draft.status,
-            });
+            };
+
+            const address = draft.address.trim();
+            if (address) payload.address = address;
+            if (draft.city_id !== undefined) payload.city_id = draft.city_id ?? null;
+            if (draft.region_id !== undefined) payload.region_id = draft.region_id ?? null;
+            if (draft.country_id !== undefined) payload.country_id = draft.country_id ?? null;
+            if (draft.department_id !== undefined) payload.department_id = draft.department_id ?? null;
+            if (draft.type) payload.type = draft.type;
+            if (surface.value !== null) payload.surface = surface.value;
+            if (baseRent.value !== null) payload.baseRent = baseRent.value;
+            if (baseCharges.value !== null) payload.baseCharges = baseCharges.value;
+            if (purchasePrice.value !== null) payload.purchase_price = purchasePrice.value;
+
+            const updated = await electronApi.updateProperty(payload);
             setProperties(prev => prev.map(p => (p.id === id ? updated : p)));
             return updated;
         } catch (err: unknown) {
