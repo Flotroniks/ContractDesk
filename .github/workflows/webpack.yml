@@ -1,17 +1,22 @@
-name: CI
+name: CI & Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev", "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "dev", "main" ]
 
 jobs:
-  build:
+  # ================================================================
+  # 1) VALIDATION JOB — runs for BOTH dev and main
+  # ================================================================
+  validate:
+    name: Validate (lint, typecheck, test, build)
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
@@ -22,11 +27,50 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Test
-        run: npm run test:coverage
-
       - name: Lint
         run: npm run lint
 
-      - name: Type check + build
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        run: npm run test:ci || npm test -- --coverage
+
+      - name: Build Frontend
         run: npm run build
+
+  # ================================================================
+  # 2) MULTI-PLATFORM ELECTRON BUILD — ONLY ON MAIN
+  # ================================================================
+  build-electron:
+    name: Build Electron (Linux / macOS / Windows)
+    needs: validate
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build Electron App
+        # Make sure your script exists:
+        # package.json → "electron:build": "electron-builder --publish never"
+        run: npm run electron:build
+
+      - name: Upload Electron Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-build-${{ matrix.os }}
+          path: dist-electron/
+          retention-days: 7
