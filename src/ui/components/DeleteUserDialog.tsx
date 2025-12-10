@@ -1,0 +1,82 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+type DeleteUserDialogProps = {
+  username: string;
+  propertiesCount: number;
+  onConfirm: () => void;
+  onCancel: () => void;
+};
+
+export function DeleteUserDialog({
+  username,
+  propertiesCount,
+  onConfirm,
+  onCancel,
+}: DeleteUserDialogProps) {
+  const { t } = useTranslation();
+  const [showDetails, setShowDetails] = useState(false);
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+        <h2 className="text-xl font-semibold mb-4 text-red-600">
+          {t('deleteUser.title')}
+        </h2>
+        
+        <div className="mb-6">
+          <p className="text-gray-700 mb-2">
+            {t('deleteUser.confirmMessage', { username })}
+          </p>
+          
+          <div className="bg-red-50 border border-red-200 rounded p-3 mt-3">
+            <p className="text-sm text-red-800 font-medium">
+              {t('deleteUser.willDelete')}:
+            </p>
+            <ul className="text-sm text-red-700 mt-2 space-y-1">
+              <li>• {t('deleteUser.userProfile')}</li>
+              <li>• {t('deleteUser.propertiesCount', { count: propertiesCount })}</li>
+              {!showDetails && (
+                <li>• {t('deleteUser.moreData')}</li>
+              )}
+            </ul>
+            
+            {showDetails && (
+              <ul className="text-sm text-red-700 mt-2 space-y-1">
+                <li>• {t('deleteUser.allTenants')}</li>
+                <li>• {t('deleteUser.allLeases')}</li>
+                <li>• {t('deleteUser.allPayments')}</li>
+              </ul>
+            )}
+            
+            <button
+              onClick={() => setShowDetails(!showDetails)}
+              className="text-sm text-red-600 hover:text-red-800 font-medium mt-2 underline"
+            >
+              {showDetails ? t('deleteUser.showLess') : t('deleteUser.showMore')}
+            </button>
+          </div>
+          
+          <p className="text-sm text-gray-600 mt-3 font-semibold">
+            {t('deleteUser.irreversible')}
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            {t('common.cancel')}
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+          >
+            {t('deleteUser.confirm')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
