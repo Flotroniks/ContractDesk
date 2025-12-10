@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ElectronApi, MonthlyStat, PropertyMonthlyStats } from "../types";
 
 export async function getMonthlyStatsForProperties(
@@ -10,7 +11,7 @@ export async function getMonthlyStatsForProperties(
     const results: PropertyMonthlyStats[] = [];
     for (const id of propertyIds) {
         try {
-            const stats = (await electronApi.getMonthlyStats?.(id, year)) ?? [];
+            const stats = (await electronApi.getMonthlyStats(id, year)) ?? [];
             results.push({ propertyId: id, propertyName: propertyNameMap.get(id) ?? `Bien ${id}`, stats });
         } catch (err) {
             console.error("Failed to load stats for property", id, err);
@@ -25,6 +26,7 @@ export function useMonthlyStats(
     propertyNameMap: Map<number, string>,
     initialYear: number
 ) {
+    const { t } = useTranslation();
     const [year, setYear] = useState<number>(initialYear);
     const [statsByProperty, setStatsByProperty] = useState<PropertyMonthlyStats[]>([]);
     const [loading, setLoading] = useState(false);
@@ -42,11 +44,11 @@ export function useMonthlyStats(
             setStatsByProperty(res);
         } catch (err) {
             console.error(err);
-            setError("Impossible de charger les statistiques mensuelles.");
+            setError(t("errors.monthlyStatsLoad"));
         } finally {
             setLoading(false);
         }
-    }, [electronApi, propertyIds, propertyNameMap, year]);
+    }, [electronApi, propertyIds, propertyNameMap, t, year]);
 
     useEffect(() => {
         setYear(initialYear);

@@ -8,9 +8,9 @@ function formatMonth(month: number) {
     return new Date(2000, month - 1, 1).toLocaleString(undefined, { month: "short" });
 }
 
-type Props = { data: PropertyMonthlyStats[]; colorScale: (propertyId: number) => string };
+type Props = { data: PropertyMonthlyStats[]; colorScale: (propertyId: number) => string; creditLabel: string };
 
-export function CreditChart({ data, colorScale }: Props) {
+export function CreditChart({ data, colorScale, creditLabel }: Props) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const svgRef = useRef<SVGSVGElement | null>(null);
     const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -84,7 +84,7 @@ export function CreditChart({ data, colorScale }: Props) {
                 .style("left", `${xPos + 12}px`)
                 .style("top", `${yPos - 10}px`)
                 .html(
-                    `<div><strong>${propertyName}</strong></div><div>${formatMonth(d.month)}</div><div>Crédit: ${d.credit.toFixed(2)} €</div>`
+                    `<div><strong>${propertyName}</strong></div><div>${formatMonth(d.month)}</div><div>${creditLabel}: ${d.credit.toFixed(2)} €</div>`
                 );
         };
         const hideTooltip = () => tooltip.style("opacity", 0);

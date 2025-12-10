@@ -12,6 +12,9 @@
         "addProfile": "Add a profile",
         "add": "Add"
     },
+    "errors": {
+        "monthlyStatsLoad": "Unable to load monthly statistics."
+    },
     "electronUnavailable": {
         "title": "Electron unavailable",
         "description": "Open this interface via Electron (command `npm run dev`) to use profiles and the local database."
@@ -180,5 +183,22 @@
         "local_commercial": "Retail / commercial",
         "parking": "Parking / garage",
         "autre": "Other"
+    },
+    "stats": {
+        "addPropertyPrompt": "Add a property to view statistics.",
+        "mode": "Mode",
+        "singleMode": "Single property",
+        "multiMode": "Multi-property comparison",
+        "year": "Year",
+        "refresh": "Refresh",
+        "property": "Property",
+        "propertiesMulti": "Properties (multi-select)",
+        "selectAtLeastOne": "Select at least one property to display charts.",
+        "loading": "Loading data...",
+        "incomeVsExpenses": "Income vs Expenses",
+        "cashflow": "Cashflow",
+        "credit": "Credit",
+        "vacancy": "Vacancy",
+        "noActiveCredit": "No active credit for this property"
     }
 }

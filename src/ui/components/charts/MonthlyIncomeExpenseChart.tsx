@@ -8,9 +8,14 @@ function formatMonth(month: number) {
     return new Date(2000, month - 1, 1).toLocaleString(undefined, { month: "short" });
 }
 
-type Props = { data: PropertyMonthlyStats[]; colorScale: (propertyId: number) => string };
+type Props = {
+    data: PropertyMonthlyStats[];
+    colorScale: (propertyId: number) => string;
+    incomeLabel: string;
+    expenseLabel: string;
+};
 
-export function MonthlyIncomeExpenseChart({ data, colorScale }: Props) {
+export function MonthlyIncomeExpenseChart({ data, colorScale, incomeLabel, expenseLabel }: Props) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const svgRef = useRef<SVGSVGElement | null>(null);
     const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -71,8 +76,8 @@ export function MonthlyIncomeExpenseChart({ data, colorScale }: Props) {
                 .style("top", `${yPos - 10}px`)
                 .html(
                     `<div><strong>${formatMonth(args.stat.month)}</strong></div><div>${args.propertyName}</div><div>${
-                        args.key === "income" ? "Revenus" : "Dépenses"
-                        }: ${value.toLocaleString("fr-FR")} €</div>`
+                        args.key === "income" ? incomeLabel : expenseLabel
+                    }: ${value.toLocaleString(undefined)} €</div>`
                 );
         };
         const hideTooltip = () => tooltip.style("opacity", 0);

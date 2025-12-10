@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import type { ElectronApi, Property, PropertyMonthlyStats } from "../types";
 import { useMonthlyStats } from "../hooks/useMonthlyStats";
 import { MonthlyIncomeExpenseChart } from "./charts/MonthlyIncomeExpenseChart";
@@ -17,6 +18,7 @@ type StatsViewProps = {
 };
 
 export function StatsView({ electronApi, properties }: StatsViewProps) {
+    const { t } = useTranslation();
     const activeProperties = useMemo(() => properties.filter((p) => p.status !== "archived"), [properties]);
     const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(activeProperties[0]?.id ?? null);
     const [mode, setMode] = useState<"single" | "multi">("single");
@@ -68,7 +70,7 @@ export function StatsView({ electronApi, properties }: StatsViewProps) {
     if (activeProperties.length === 0) {
         return (
             <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 text-sm text-slate-600">
-                Ajoutez un bien pour visualiser des statistiques.
+                {t("stats.addPropertyPrompt")}
             </div>
         );
     }
@@ -77,7 +79,7 @@ export function StatsView({ electronApi, properties }: StatsViewProps) {
         <section className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 space-y-6">
             <div className="flex flex-wrap gap-3 items-end">
                 <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold text-slate-600">Mode</label>
+                    <label className="text-xs font-semibold text-slate-600">{t("stats.mode")}</label>
                     <div className="flex items-center gap-3 text-sm text-slate-700">
                         <label className="flex items-center gap-2">
                             <input
@@ -92,7 +94,7 @@ export function StatsView({ electronApi, properties }: StatsViewProps) {
                                     setSelectedPropertyIds(fallback ? [fallback] : []);
                                 }}
                             />
-                            Mono-propriété
+                            {t("stats.singleMode")}
                         </label>
                         <label className="flex items-center gap-2">
                             <input
@@ -110,12 +112,12 @@ export function StatsView({ electronApi, properties }: StatsViewProps) {
                                     });
                                 }}
                             />
-                            Comparaison multi-propriétés
+                            {t("stats.multiMode")}
                         </label>
                     </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold text-slate-600">Année</label>
+                    <label className="text-xs font-semibold text-slate-600">{t("stats.year")}</label>
                     <select
                         value={year}
                         onChange={(e) => setYear(Number(e.target.value))}
@@ -133,14 +135,14 @@ export function StatsView({ electronApi, properties }: StatsViewProps) {
                         onClick={() => void refresh()}
                         className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                     >
-                        Recharger
+                        {t("stats.refresh")}
                     </button>
                 </div>
             </div>
 
             {mode === "single" ? (
                 <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold text-slate-600">Bien</label>
+                    <label className="text-xs font-semibold text-slate-600">{t("stats.property")}</label>
                     <select
                         value={selectedPropertyId ?? ""}
                         onChange={(e) => {
@@ -160,7 +162,7 @@ export function StatsView({ electronApi, properties }: StatsViewProps) {
                 </div>
             ) : (
                 <div className="w-full rounded-lg border border-slate-200 bg-white p-3">
-                    <div className="text-xs font-semibold text-slate-600 mb-2">Biens (sélection multiple)</div>
+                    <div className="text-xs font-semibold text-slate-600 mb-2">{t("stats.propertiesMulti")}</div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-sm text-slate-700">
                         {activeProperties.map((property) => {
                             const checked = selectedPropertyIds.includes(property.id);
@@ -186,31 +188,44 @@ export function StatsView({ electronApi, properties }: StatsViewProps) {
             )}
 
             {error && <div className="text-sm text-red-600">{error}</div>}
-            {loading && <div className="text-sm text-slate-500">Chargement des données...</div>}
+            {loading && <div className="text-sm text-slate-500">{t("stats.loading")}</div>}
 
             {mode === "multi" && propertyIdsForFetch.length === 0 && (
                 <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                    Sélectionnez au moins un bien pour afficher les graphiques.
+                    {t("stats.selectAtLeastOne")}
                 </div>
             )}
 
             {shouldShowCharts && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <ChartCard title="Revenus vs Dépenses">
-                        <MonthlyIncomeExpenseChart data={normalizedStatsByProperty} colorScale={colorForProperty} />
+                    <ChartCard title={t("stats.incomeVsExpenses")}>
+                        <MonthlyIncomeExpenseChart
+                            data={normalizedStatsByProperty}
+                            colorScale={colorForProperty}
+                            incomeLabel={t("finances.income")}
+                            expenseLabel={t("finances.expenses")}
+                        />
                     </ChartCard>
-                    <ChartCard title="Cashflow">
-                        <CashflowChart data={normalizedStatsByProperty} colorScale={colorForProperty} />
+                    <ChartCard title={t("stats.cashflow")}>
+                        <CashflowChart data={normalizedStatsByProperty} colorScale={colorForProperty} cashflowLabel={t("finances.cashflow")} />
                     </ChartCard>
-                    <ChartCard title="Crédit">
+                    <ChartCard title={t("stats.credit")}>
                         {hasActiveCredits ? (
-                            <CreditChart data={normalizedStatsByProperty} colorScale={colorForProperty} />
+                            <CreditChart
+                                data={normalizedStatsByProperty}
+                                colorScale={colorForProperty}
+                                creditLabel={t("finances.credit")}
+                            />
                         ) : (
-                            <EmptyState message="Aucun crédit actif pour ce bien" />
+                            <EmptyState message={t("stats.noActiveCredit") ?? ""} />
                         )}
                     </ChartCard>
-                    <ChartCard title="Vacance">
-                        <VacancyChart data={normalizedStatsByProperty} colorScale={colorForProperty} />
+                    <ChartCard title={t("stats.vacancy")}>
+                        <VacancyChart
+                            data={normalizedStatsByProperty}
+                            colorScale={colorForProperty}
+                            vacancyLabel={t("finances.vacancy")}
+                        />
                     </ChartCard>
                 </div>
             )}

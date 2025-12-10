@@ -8,9 +8,9 @@ function formatMonth(month: number) {
     return new Date(2000, month - 1, 1).toLocaleString(undefined, { month: "short" });
 }
 
-type Props = { data: PropertyMonthlyStats[]; colorScale: (propertyId: number) => string };
+type Props = { data: PropertyMonthlyStats[]; colorScale: (propertyId: number) => string; vacancyLabel: string };
 
-export function VacancyChart({ data, colorScale }: Props) {
+export function VacancyChart({ data, colorScale, vacancyLabel }: Props) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const svgRef = useRef<SVGSVGElement | null>(null);
     const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -61,7 +61,7 @@ export function VacancyChart({ data, colorScale }: Props) {
                 .style("opacity", 1)
                 .style("left", `${xPos + 12}px`)
                 .style("top", `${yPos - 10}px`)
-                .html(`<div><strong>${propertyName}</strong></div><div>${formatMonth(d.month)}</div><div>Vacance: ${percent}%</div>`);
+                .html(`<div><strong>${propertyName}</strong></div><div>${formatMonth(d.month)}</div><div>${vacancyLabel}: ${percent}%</div>`);
         };
         const hideTooltip = () => tooltip.style("opacity", 0);
 
