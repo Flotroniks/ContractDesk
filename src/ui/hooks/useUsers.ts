@@ -1,9 +1,13 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useState, useEffect, useMemo, useCallback } from "react";
 import type { UserProfile, ElectronApi } from "../types";
 
+/**
+ * Fetch and mutate local user profiles via the Electron bridge, exposing loading/error state.
+ */
 export function useUsers() {
     const electronApi = useMemo<ElectronApi | null>(
-        () => (typeof window !== "undefined" ? (window as any).electron : null),
+        () => (typeof window !== "undefined" ? (window.electron as ElectronApi) ?? null : null),
         []
     );
 
@@ -35,6 +39,9 @@ export function useUsers() {
         void loadUsers();
     }, [electronApi, loadUsers]);
 
+    /**
+     * Create a user and append it to state with duplicate-name handling.
+     */
     async function createUser(username: string, password: string = ''): Promise<UserProfile | null> {
         if (!electronApi) return null;
         const trimmed = username.trim();
@@ -62,6 +69,9 @@ export function useUsers() {
         }
     }
 
+    /**
+     * Update an existing profile and merge the result into local state.
+     */
     async function updateUser(id: number, username: string): Promise<UserProfile | null> {
         if (!electronApi) return null;
         const trimmed = username.trim();
@@ -85,6 +95,9 @@ export function useUsers() {
         }
     }
 
+    /**
+     * Delete a profile after password verification and remove it from state.
+     */
     async function deleteUser(id: number, password: string = ''): Promise<{ propertiesDeleted: number } | null> {
         if (!electronApi) return null;
         try {

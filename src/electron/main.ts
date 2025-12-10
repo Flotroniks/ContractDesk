@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from "electron"
-import { ipcMainHandle, isDev, type EventPayloadArgs, type EventPayloadMapping } from "./util.js";
+import { ipcMainHandle, isDev } from "./util.js";
 import { getPreloadPath, getUIPath, getIconPath } from "./pathResolver.js";
 import { getStaticData, pollResources } from "./test.js";
 import dotenv from "dotenv";
@@ -41,17 +41,13 @@ import {
     getCreditByProperty,
     saveCredit,
     deleteCredit,
-    type UserRow,
-    type PropertyRow,
-    type CountryRow,
-    type RegionRow,
-    type CityRow,
-    type DepartmentRow,
-    type ExpenseRow,
-    type IncomeRow,
-    type CategoryRow,
 } from "./db/database.js";
 import fs from "fs";
+
+/**
+ * Electron main process entrypoint: wires IPC handlers, creates the BrowserWindow,
+ * and bridges database operations to the renderer via typed channels.
+ */
 
 dotenv.config();
 

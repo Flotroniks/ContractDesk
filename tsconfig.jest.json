@@ -1,0 +1,18 @@
+{
+    "extends": "./tsconfig.app.json",
+    "compilerOptions": {
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "exactOptionalPropertyTypes": true,
+        "noEmit": true,
+        "types": ["jest", "node"],
+        "baseUrl": "./",
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "include": ["src", "tests", "setupTests.ts", "jest.config.ts"],
+    "exclude": ["dist", "dist-electron", "dist-react"]
+}

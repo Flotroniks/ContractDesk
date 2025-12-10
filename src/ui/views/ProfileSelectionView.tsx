@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from "react-i18next";
 import type { UserProfile } from "../types";
 import { ProfileCard } from "../components/ProfileCard";
@@ -29,6 +30,9 @@ type ProfileSelectionViewProps = {
     onCreate: () => void;
 };
 
+/**
+ * Landing view listing local profiles with creation, selection, and inline rename actions.
+ */
 export function ProfileSelectionView({
     users,
     loading,

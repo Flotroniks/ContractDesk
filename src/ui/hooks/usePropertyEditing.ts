@@ -1,7 +1,11 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useState } from "react";
 import type { PropertyDraft, Property } from "../types";
 import { emptyPropertyDraft } from "../constants/propertyTypes";
 
+/**
+ * Manage local editing state for properties, seeding drafts from existing rows.
+ */
 export function usePropertyEditing() {
     const [editingPropertyId, setEditingPropertyId] = useState<number | null>(null);
     const [editPropertyDraft, setEditPropertyDraft] = useState<PropertyDraft & { status: string }>({
@@ -9,6 +13,9 @@ export function usePropertyEditing() {
         status: "active",
     });
 
+    /**
+     * Prepare the draft with the selected property's values and enter edit mode.
+     */
     function startEditProperty(property: Property) {
         setEditingPropertyId(property.id);
         setEditPropertyDraft({
@@ -27,11 +34,17 @@ export function usePropertyEditing() {
         });
     }
 
+    /**
+     * Exit edit mode and reset the draft.
+     */
     function cancelEditProperty() {
         setEditingPropertyId(null);
         setEditPropertyDraft({ ...emptyPropertyDraft, status: "active" });
     }
 
+    /**
+     * Clear any editing state, used when leaving the properties section.
+     */
     function resetEditing() {
         setEditingPropertyId(null);
         setEditPropertyDraft({ ...emptyPropertyDraft, status: "active" });

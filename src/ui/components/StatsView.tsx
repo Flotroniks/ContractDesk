@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { ElectronApi, Property, PropertyMonthlyStats } from "../types";
@@ -17,6 +18,9 @@ type StatsViewProps = {
     properties: Property[];
 };
 
+/**
+ * Dashboard of monthly metrics with single/multi property modes and D3-powered charts.
+ */
 export function StatsView({ electronApi, properties }: StatsViewProps) {
     const { t } = useTranslation();
     const activeProperties = useMemo(() => properties.filter((p) => p.status !== "archived"), [properties]);

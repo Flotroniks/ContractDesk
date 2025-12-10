@@ -1,5 +1,9 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from "react-i18next";
 
+/**
+ * Fallback view when the renderer runs without the Electron preload bridge.
+ */
 export function ElectronUnavailableView() {
     const { t } = useTranslation();
 

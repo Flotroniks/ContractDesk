@@ -39,7 +39,95 @@ export type PropertyMonthlyStats = {
     stats: MonthlyStat[];
 };
 
-export type ElectronApi = any;
+export type CreditSavePayload = {
+    id?: number;
+    user_id: number;
+    property_id: number;
+    credit_type?: string | null;
+    down_payment?: number | null;
+    principal?: number | null;
+    annual_rate?: number | null;
+    duration_months?: number | null;
+    start_date?: string | null;
+    insurance_monthly?: number | null;
+    notes?: string | null;
+    is_active?: number | boolean;
+    refinance_from_id?: number | null;
+};
+
+export type ElectronApi = {
+    listUsers: () => Promise<UserProfile[]>;
+    createUser: (username: string, password: string) => Promise<UserProfile>;
+    updateUser: (id: number, username: string) => Promise<UserProfile>;
+    deleteUser: (id: number, password?: string) => Promise<{ propertiesDeleted: number }>;
+    verifyUserPassword?: (username: string, password: string) => Promise<UserProfile | null>;
+
+    listCountries: () => Promise<Country[]>;
+    listRegions: (countryId: number) => Promise<Region[]>;
+    listCities: (regionId: number, departmentId?: number | null) => Promise<City[]>;
+    listDepartments: (regionId: number) => Promise<Department[]>;
+    createCountry: (name: string, code?: string) => Promise<Country>;
+    createRegion: (countryId: number, name: string) => Promise<Region>;
+    createCity: (regionId: number, countryId: number, departmentId: number | null, name: string) => Promise<City>;
+    createDepartment: (regionId: number, name: string) => Promise<Department>;
+
+    listExpensesByProperty: (propertyId: number, year?: number) => Promise<Expense[]>;
+    createExpense: (payload: {
+        property_id: number;
+        date: string;
+        category: string;
+        description: string | null;
+        amount: number;
+        is_recurring?: boolean;
+        frequency?: string | null;
+    }) => Promise<Expense>;
+    updateExpense: (
+        id: number,
+        payload: Partial<{
+            date: string;
+            category: string;
+            description: string | null;
+            amount: number;
+            is_recurring?: boolean;
+            frequency?: string | null;
+        }>
+    ) => Promise<Expense>;
+    deleteExpense: (id: number) => Promise<void>;
+    listCategories?: (type: "expense" | "income") => Promise<Category[]>;
+
+    listIncomesByProperty: (propertyId: number, year?: number) => Promise<Income[]>;
+    createIncome: (payload: {
+        property_id: number;
+        lease_id: number | null;
+        date: string;
+        amount: number;
+        payment_method: string | null;
+        notes: string | null;
+    }) => Promise<Income>;
+    updateIncome: (
+        id: number,
+        payload: Partial<{
+            date: string;
+            amount: number;
+            payment_method: string | null;
+            notes: string | null;
+            lease_id: number | null;
+        }>
+    ) => Promise<Income>;
+    deleteIncome: (id: number) => Promise<void>;
+
+    listCreditsByProperty: (propertyId: number) => Promise<Credit[]>;
+    getCreditByProperty: (propertyId: number) => Promise<Credit | null>;
+    saveCredit: (payload: CreditSavePayload) => Promise<Credit>;
+    deleteCredit: (id: number) => Promise<{ success?: boolean } | void>;
+
+    getPropertyAnnualSummary: (propertyId: number, year: number, purchasePrice?: number | null) => Promise<AnnualSummary>;
+    listCashflowByProperty: (propertyId: number, year: number) => Promise<CashflowRow[]>;
+    listVacancyMonths: (propertyId: number, year: number) => Promise<{ vacantMonths: number[]; vacancyRate: number }>;
+    exportFinanceExcel: (propertyId: number, year: number, outputPath?: string) => Promise<void>;
+
+    getMonthlyStats: (propertyId: number, year: number) => Promise<MonthlyStat[]>;
+};
 
 export type NumberParseResult = { 
     valid: boolean; 

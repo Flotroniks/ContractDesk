@@ -1,3 +1,9 @@
+/**
+ * Payload describing a mortgage/credit input used for repayment calculations.
+ * @property {number} principal Total borrowed amount.
+ * @property {number} annualRate Nominal annual interest rate expressed as a decimal (e.g. 0.04 for 4%).
+ * @property {number} durationMonths Total number of monthly installments.
+ */
 export type CreditInput = {
     principal: number;
     annualRate: number;
@@ -6,7 +12,11 @@ export type CreditInput = {
 
 /**
  * Calculate amortized monthly payment (capital + interest).
- * Falls back to straight-line division when rate is zero.
+ * Falls back to straight-line division when the rate is zero to avoid divide-by-zero in the annuity formula.
+ * @param {number} principal Total borrowed capital.
+ * @param {number} annualRate Nominal annual interest rate as a decimal (0.04 = 4%).
+ * @param {number} durationMonths Number of monthly installments.
+ * @returns {number} Monthly payment amount combining principal and interest, rounded by caller if needed.
  */
 export function calculateMonthlyPayment(principal: number, annualRate: number, durationMonths: number): number {
     if (!principal || !durationMonths || durationMonths <= 0) return 0;
@@ -20,6 +30,12 @@ export function calculateMonthlyPayment(principal: number, annualRate: number, d
     return numerator / denominator;
 }
 
+/**
+ * Sum scheduled monthly payment with optional insurance premium.
+ * @param {number} monthlyPayment Base credit repayment amount per month.
+ * @param {number | null | undefined} insuranceMonthly Optional insurance premium to tack on.
+ * @returns {number} Total cash outflow per month for the credit including insurance.
+ */
 export function totalMonthlyCharge(monthlyPayment: number, insuranceMonthly: number | null | undefined): number {
     return (monthlyPayment ?? 0) + (insuranceMonthly ?? 0);
 }
@@ -29,6 +45,11 @@ type CreditLike = {
     duration_months: number | null;
 };
 
+/**
+ * Parse a date string into a Date instance while guarding against invalid inputs.
+ * @param {string | null} value ISO-like date string.
+ * @returns {Date | null} Date if valid; otherwise null.
+ */
 function parseDate(value: string | null): Date | null {
     if (!value) return null;
     const parsed = new Date(value);
@@ -36,6 +57,12 @@ function parseDate(value: string | null): Date | null {
     return parsed;
 }
 
+/**
+ * Offset a date by a number of months.
+ * @param {Date} source Base date.
+ * @param {number} months Number of months to add (can be negative).
+ * @returns {Date} New date shifted by the requested months.
+ */
 function addMonths(source: Date, months: number): Date {
     const next = new Date(source.getTime());
     next.setMonth(next.getMonth() + months);
@@ -43,7 +70,10 @@ function addMonths(source: Date, months: number): Date {
 }
 
 /**
- * Returns true when the credit term is over relative to the provided date.
+ * Determine whether a credit has finished based on its start date and duration.
+ * @param {CreditLike} credit Credit-like object holding start and duration metadata.
+ * @param {Date} [now] Reference date used for comparison, defaults to current time.
+ * @returns {boolean} True if the credit term has elapsed; false otherwise.
  */
 export function isCreditFinished(credit: CreditLike, now: Date = new Date()): boolean {
     if (!credit?.start_date) return false;

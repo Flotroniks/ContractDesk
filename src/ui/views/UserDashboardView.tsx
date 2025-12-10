@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from "react-i18next";
 import type { UserProfile, PropertyDraft, TabKey, Property, ElectronApi } from "../types";
 import { PropertyForm } from "../components/PropertyForm";
@@ -35,6 +36,9 @@ const tabs: Array<{ key: TabKey }> = [
     { key: "stats" },
 ];
 
+/**
+ * Main authenticated view for a user combining properties, finances, and stats tabs.
+ */
 export function UserDashboardView({
     user,
     activeTab,

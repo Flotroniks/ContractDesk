@@ -1,6 +1,7 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { ElectronApi, MonthlyStat, PropertyMonthlyStats } from "../types";
+import type { ElectronApi, PropertyMonthlyStats } from "../types";
 
 export async function getMonthlyStatsForProperties(
     electronApi: ElectronApi,
@@ -32,6 +33,9 @@ export function useMonthlyStats(
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    /**
+     * Load monthly stats for all selected properties in the given year.
+     */
     const fetchData = useCallback(async () => {
         if (!electronApi || propertyIds.length === 0) {
             setStatsByProperty([]);

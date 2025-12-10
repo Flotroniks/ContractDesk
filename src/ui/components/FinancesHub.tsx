@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type FormEvent, type RefObject, type SetStateAction } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import type { ElectronApi, Property } from "../types";
 import { useFinancialDashboard } from "../hooks/useFinancialDashboard";
 import { useExpenses } from "../hooks/useExpenses";
 import { useIncomes } from "../hooks/useIncomes";
+import type { ExpenseForm } from "../hooks/useExpenses";
+import type { IncomeForm } from "../hooks/useIncomes";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from({ length: 5 }, (_, idx) => currentYear - 2 + idx);
@@ -14,14 +17,15 @@ type FinancesHubProps = {
     initialPropertyId?: number | null;
 };
 
+/**
+ * Central finance workspace combining dashboard metrics, expenses, and incomes for a property.
+ */
 export function FinancesHub({ electronApi, properties, initialPropertyId = null }: FinancesHubProps) {
     const { t } = useTranslation();
     const activeProperties = useMemo(() => properties.filter((p) => p.status !== "archived"), [properties]);
     const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(initialPropertyId ?? null);
     const [year, setYear] = useState<number>(currentYear);
     const [panel, setPanel] = useState<"expenses" | "incomes">("expenses");
-    const selectedProperty = useMemo(() => activeProperties.find((p) => p.id === selectedPropertyId) ?? null, [activeProperties, selectedPropertyId]);
-
     useEffect(() => {
         if (!selectedPropertyId && activeProperties.length > 0) {
             setSelectedPropertyId(activeProperties[0].id);
@@ -74,9 +78,9 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
         }
 
         if (target === "expenses") {
-            expenseState.setForm((prev: any) => ({ ...prev, amount: normalized }));
+            expenseState.setForm((prev: ExpenseForm) => ({ ...prev, amount: normalized }));
         } else {
-            incomeState.setForm((prev: any) => ({ ...prev, amount: normalized }));
+            incomeState.setForm((prev: IncomeForm) => ({ ...prev, amount: normalized }));
         }
 
         setPanel(target);

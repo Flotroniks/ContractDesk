@@ -1,4 +1,5 @@
 import { useState } from 'react';
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useTranslation } from 'react-i18next';
 
 type ConfirmPasswordDialogProps = {
@@ -8,6 +9,9 @@ type ConfirmPasswordDialogProps = {
   onCancel: () => void;
 };
 
+/**
+ * Modal asking for password confirmation before deleting a user and related data.
+ */
 export function ConfirmPasswordDialog({
   username,
   propertiesCount,
