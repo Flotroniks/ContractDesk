@@ -7,21 +7,43 @@ import { calculateMonthlyPayment, totalMonthlyCharge, isCreditFinished } from '.
 
 let db: Database.Database | null = null;
 
+/**
+ * Resolve the SQLite database path, allowing tests to override with CONTRACTDESK_DB_PATH
+ * (use ":memory:" for an ephemeral database).
+ */
+function resolveDbPath(): string {
+  const override = process.env.CONTRACTDESK_DB_PATH;
+  if (override) {
+    return override === ':memory:' ? override : path.isAbsolute(override) ? override : path.join(process.cwd(), override);
+  }
+  const baseProject = process.cwd();
+  return path.join(baseProject, 'database', 'contractdesk.db');
+}
+
+/**
+ * Lazily open the shared SQLite connection and initialize schema if needed.
+ */
 export function getDb() {
   if (!db) {
-    const baseProject = process.cwd();
-    //in project/database
-    const dbPath = path.join(baseProject, 'database', 'contractdesk.db');
-    fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+    const dbPath = resolveDbPath();
+    if (dbPath !== ':memory:') fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
-
-     
     db = new Database(dbPath);
     db.pragma('journal_mode = WAL');
 
     initSchema(db);
   }
   return db;
+}
+
+/**
+ * Test-only helper to close and clear the singleton database connection.
+ */
+export function resetDbForTests() {
+  if (db) {
+    db.close();
+    db = null;
+  }
 }
 
 function initSchema(db: Database.Database) {
@@ -284,6 +306,10 @@ function ensureCreditColumns(db: Database.Database) {
   }
 }
 
+/**
+ * Scan active credits and mark the ones past their term as inactive.
+ * @param now Current date reference used to evaluate end-of-term.
+ */
 export function markFinishedCreditsInactive(now: Date = new Date()) {
   const db = getDb();
   const activeCredits = db
@@ -440,6 +466,10 @@ export type CategoryRow = {
   name: string;
 };
 
+/**
+ * List all users ordered by creation date.
+ * @returns Array of persisted users with ids and timestamps.
+ */
 export function listUsers(): UserRow[] {
   const db = getDb();
   const rows = db
@@ -449,6 +479,11 @@ export function listUsers(): UserRow[] {
   return rows;
 }
 
+/**
+ * Create a user with a hashed password.
+ * @param username User login name.
+ * @param password Plaintext password (default 1234 for bootstrapping).
+ */
 export function createUser(username: string, password: string = '1234'): UserRow {
   const trimmedName = username.trim();
   if (!trimmedName) throw new Error("username_required");
@@ -478,6 +513,9 @@ export function createUser(username: string, password: string = '1234'): UserRow
   }
 }
 
+/**
+ * Verify credentials and return the user row on success.
+ */
 export function verifyUserPassword(username: string, password: string): UserRow | null {
   const db = getDb();
   const user = db
@@ -490,6 +528,9 @@ export function verifyUserPassword(username: string, password: string): UserRow 
   return { id: user.id, username: user.username, created_at: user.created_at };
 }
 
+/**
+ * Update a username while keeping uniqueness constraints intact.
+ */
 export function updateUser(id: number, username: string): UserRow {
   const trimmedName = username.trim();
   if (!trimmedName) throw new Error("username_required");
@@ -519,6 +560,10 @@ export function updateUser(id: number, username: string): UserRow {
   }
 }
 
+/**
+ * Delete a user and cascade delete their properties.
+ * @returns Count of properties removed.
+ */
 export function deleteUser(id: number): { propertiesDeleted: number } {
   const db = getDb();
 
@@ -539,6 +584,9 @@ export function deleteUser(id: number): { propertiesDeleted: number } {
 
 // ========== COUNTRIES, REGIONS, CITIES ==========
 
+/**
+ * Retrieve all countries ordered alphabetically.
+ */
 export function listCountries(): CountryRow[] {
   const db = getDb();
   return db
@@ -546,6 +594,9 @@ export function listCountries(): CountryRow[] {
     .all() as CountryRow[];
 }
 
+/**
+ * List regions for a given country id.
+ */
 export function listRegions(countryId: number): RegionRow[] {
   const db = getDb();
   return db
@@ -553,6 +604,9 @@ export function listRegions(countryId: number): RegionRow[] {
     .all(countryId) as RegionRow[];
 }
 
+/**
+ * List cities by region, optionally filtered by department.
+ */
 export function listCities(regionId: number, departmentId?: number | null): CityRow[] {
   const db = getDb();
   if (departmentId) {
@@ -568,6 +622,9 @@ export function listCities(regionId: number, departmentId?: number | null): City
     .all(regionId) as CityRow[];
 }
 
+/**
+ * Create a country row with uniqueness enforcement on name/code.
+ */
 export function createCountry(name: string, code?: string): CountryRow {
   const db = getDb();
   const trimmedName = name.trim();
@@ -593,6 +650,9 @@ export function createCountry(name: string, code?: string): CountryRow {
   }
 }
 
+/**
+ * Create a region under a country.
+ */
 export function createRegion(countryId: number, name: string): RegionRow {
   const db = getDb();
   const trimmedName = name.trim();
@@ -618,6 +678,9 @@ export function createRegion(countryId: number, name: string): RegionRow {
   }
 }
 
+/**
+ * Create a city tied to region/country (and optionally department).
+ */
 export function createCity(regionId: number, countryId: number, departmentId: number | null, name: string): CityRow {
   const db = getDb();
   const trimmedName = name.trim();
@@ -643,6 +706,9 @@ export function createCity(regionId: number, countryId: number, departmentId: nu
   }
 }
 
+/**
+ * List departments for a region.
+ */
 export function listDepartments(regionId: number): DepartmentRow[] {
   const db = getDb();
   return db
@@ -650,6 +716,9 @@ export function listDepartments(regionId: number): DepartmentRow[] {
     .all(regionId) as DepartmentRow[];
 }
 
+/**
+ * Create a department under a region.
+ */
 export function createDepartment(regionId: number, name: string): DepartmentRow {
   const db = getDb();
   const trimmedName = name.trim();
@@ -692,6 +761,9 @@ type PropertyUpdatePayload = {
   status?: string;
 };
 
+/**
+ * List properties owned by a user ordered by creation date.
+ */
 export function listProperties(userId: number): PropertyRow[] {
   const db = getDb();
   const rows = db
@@ -706,6 +778,9 @@ export function listProperties(userId: number): PropertyRow[] {
   return rows;
 }
 
+/**
+ * Persist a property with validation on name and status defaults.
+ */
 export function createProperty(payload: {
   userId: number;
   name: string;
@@ -756,6 +831,9 @@ export function createProperty(payload: {
   return inserted;
 }
 
+/**
+ * Update selected property fields while validating status and name.
+ */
 export function updateProperty(payload: PropertyUpdatePayload): PropertyRow {
   const db = getDb();
   if (!payload.id || !payload.userId) throw new Error("property_update_missing_id");
@@ -850,6 +928,9 @@ type ExpensePayload = {
   frequency?: string | null;
 };
 
+/**
+ * Insert an expense row for a property.
+ */
 export function createExpense(payload: ExpensePayload): ExpenseRow {
   const db = getDb();
   const result = db
@@ -878,6 +959,9 @@ export function createExpense(payload: ExpensePayload): ExpenseRow {
   return inserted;
 }
 
+/**
+ * Update an expense and return the persisted row.
+ */
 export function updateExpense(id: number, payload: Partial<ExpensePayload>): ExpenseRow {
   const db = getDb();
   const fields: string[] = [];
@@ -926,12 +1010,18 @@ export function updateExpense(id: number, payload: Partial<ExpensePayload>): Exp
   return updated;
 }
 
+/**
+ * Remove an expense by id.
+ */
 export function deleteExpense(id: number) {
   const db = getDb();
   const res = db.prepare(`DELETE FROM expenses WHERE id = ?;`).run(id);
   if (res.changes === 0) throw new Error("expense_not_found");
 }
 
+/**
+ * List expenses for a property, optionally filtered by year.
+ */
 export function listExpensesByProperty(propertyId: number, year?: number): ExpenseRow[] {
   const db = getDb();
   if (year) {
@@ -965,6 +1055,9 @@ type IncomePayload = {
   notes?: string | null;
 };
 
+/**
+ * Insert an income row for a property/lease.
+ */
 export function createIncome(payload: IncomePayload): IncomeRow {
   const db = getDb();
   const result = db
@@ -992,6 +1085,9 @@ export function createIncome(payload: IncomePayload): IncomeRow {
   return inserted;
 }
 
+/**
+ * Update an income entry and return the row.
+ */
 export function updateIncome(id: number, payload: Partial<IncomePayload>): IncomeRow {
   const db = getDb();
   const fields: string[] = [];
@@ -1036,12 +1132,18 @@ export function updateIncome(id: number, payload: Partial<IncomePayload>): Incom
   return updated;
 }
 
+/**
+ * Delete an income entry by id.
+ */
 export function deleteIncome(id: number) {
   const db = getDb();
   const res = db.prepare(`DELETE FROM incomes WHERE id = ?;`).run(id);
   if (res.changes === 0) throw new Error("income_not_found");
 }
 
+/**
+ * List incomes for a property, optionally limited to a year.
+ */
 export function listIncomesByProperty(propertyId: number, year?: number): IncomeRow[] {
   const db = getDb();
   if (year) {
@@ -1065,6 +1167,9 @@ export function listIncomesByProperty(propertyId: number, year?: number): Income
     .all(propertyId) as IncomeRow[];
 }
 
+/**
+ * List credits for a property after marking finished ones inactive.
+ */
 export function listCreditsByProperty(propertyId: number): CreditRow[] {
   const db = getDb();
   markFinishedCreditsInactive();
@@ -1078,6 +1183,9 @@ export function listCreditsByProperty(propertyId: number): CreditRow[] {
     .all(propertyId) as CreditRow[];
 }
 
+/**
+ * Return the first active credit for a property.
+ */
 export function getCreditByProperty(propertyId: number): CreditRow | null {
   markFinishedCreditsInactive();
   const [first] = listCreditsByProperty(propertyId).filter((c) => c.is_active === 1);
@@ -1100,6 +1208,9 @@ type CreditPayload = {
   refinance_from_id?: number | null;
 };
 
+/**
+ * Insert or update a credit, recalculating monthly payment/amount.
+ */
 export function saveCredit(payload: CreditPayload): CreditRow {
   const db = getDb();
   const creditType = payload.credit_type ?? 'standard';
@@ -1194,6 +1305,9 @@ export function saveCredit(payload: CreditPayload): CreditRow {
   return saved;
 }
 
+/**
+ * Delete a credit entry.
+ */
 export function deleteCredit(id: number) {
   const db = getDb();
   const res = db.prepare(`DELETE FROM credits WHERE id = ?;`).run(id);
@@ -1201,6 +1315,9 @@ export function deleteCredit(id: number) {
   return { success: true } as const;
 }
 
+/**
+ * List categories by type ordered by name.
+ */
 export function listCategories(type: 'expense' | 'income'): CategoryRow[] {
   const db = getDb();
   return db
@@ -1208,6 +1325,9 @@ export function listCategories(type: 'expense' | 'income'): CategoryRow[] {
     .all(type) as CategoryRow[];
 }
 
+/**
+ * Ensure a category exists and return it.
+ */
 export function upsertCategory(type: 'expense' | 'income', name: string): CategoryRow {
   const db = getDb();
   db.prepare(`INSERT OR IGNORE INTO categories (type, name) VALUES (?, ?);`).run(type, name);
@@ -1218,6 +1338,9 @@ export function upsertCategory(type: 'expense' | 'income', name: string): Catego
   return row;
 }
 
+/**
+ * List amortization rows for a property.
+ */
 export function listAmortizationsByProperty(propertyId: number): AmortizationRow[] {
   const db = getDb();
   return db
@@ -1331,6 +1454,9 @@ function expandRecurringAllocations(rows: Array<{ amount: number; category: stri
   return { monthly, byCategory, annual };
 }
 
+/**
+ * Compute monthly cashflow breakdown (income, expenses, credit) for a property.
+ */
 export function listCashflowByProperty(propertyId: number, year: number): MonthlyCashflow[] {
   const db = getDb();
   markFinishedCreditsInactive();
@@ -1384,6 +1510,9 @@ export function listCashflowByProperty(propertyId: number, year: number): Monthl
   return result;
 }
 
+/**
+ * Combine cashflow with vacancy months to produce monthly stats records.
+ */
 export function listMonthlyStats(propertyId: number, year: number): Array<{
   month: number;
   income: number;
@@ -1416,6 +1545,9 @@ type AnnualSummary = {
   vacancy_cost: number;
 };
 
+/**
+ * Aggregate annual financial metrics for a property including yields and vacancy cost.
+ */
 export function getPropertyAnnualSummary(propertyId: number, year: number, purchasePrice?: number | null): AnnualSummary {
   const db = getDb();
   markFinishedCreditsInactive();
@@ -1488,6 +1620,9 @@ export function getPropertyAnnualSummary(propertyId: number, year: number, purch
   };
 }
 
+/**
+ * Compute months without income and derive vacancy rate.
+ */
 export function listVacancyMonths(propertyId: number, year: number): { vacantMonths: number[]; vacancyRate: number } {
   const db = getDb();
   const incomeRows = db

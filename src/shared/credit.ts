@@ -20,6 +20,9 @@ export function calculateMonthlyPayment(principal: number, annualRate: number, d
     return numerator / denominator;
 }
 
+/**
+ * Sum scheduled monthly payment with optional insurance premium.
+ */
 export function totalMonthlyCharge(monthlyPayment: number, insuranceMonthly: number | null | undefined): number {
     return (monthlyPayment ?? 0) + (insuranceMonthly ?? 0);
 }
