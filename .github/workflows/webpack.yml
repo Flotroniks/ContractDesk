@@ -13,7 +13,7 @@ jobs:
   # 1) VALIDATION — pour dev, main et tags
   # ================================================================
   validate:
-    name: Validate ( typecheck, test, build)
+    name: Validate (lint, typecheck, test, build)
     runs-on: ubuntu-latest
 
     steps:
@@ -28,6 +28,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Lint
+        run: npm run lint
 
       - name: Typecheck
         run: npx tsc --noEmit
