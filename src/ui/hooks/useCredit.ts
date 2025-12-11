@@ -127,8 +127,7 @@ export function useCredit(electronApi: ElectronApi | null, propertyId: number | 
         setError(null);
         try {
             const annualRateDecimal = rate.value / 100;
-            const saved = await electronApi.saveCredit({
-                id: credit?.id,
+            const payload: Parameters<typeof electronApi.saveCredit>[0] = {
                 user_id: userId,
                 property_id: propertyId,
                 down_payment: downPayment.value ?? null,
@@ -139,7 +138,11 @@ export function useCredit(electronApi: ElectronApi | null, propertyId: number | 
                 insurance_monthly: insurance.value ?? 0,
                 notes: form.notes || null,
                 is_active: 1,
-            });
+            };
+            if (credit?.id !== undefined) {
+                payload.id = credit.id;
+            }
+            const saved = await electronApi.saveCredit(payload);
             setCredit(saved);
             await loadCredit();
             return saved;
