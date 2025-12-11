@@ -65,6 +65,13 @@ jobs:
         with:
           node-version: 20
 
+      # 🟡 Python 3.11 pour node-gyp / better-sqlite3 sur macOS
+      - name: Setup Python 3.11 (macOS only)
+        if: matrix.os == 'macos-latest'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Install deps
         run: npm ci
 

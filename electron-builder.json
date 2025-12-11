@@ -16,8 +16,6 @@
   ],
   "icon": "./templateIcon.png",
 
-             
-
   "mac": {
     "target": "dmg"
   },
