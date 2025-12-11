@@ -4,12 +4,19 @@
     "dist-electron",
     "dist-react"
   ],
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "Flotroniks",
+      "repo": "ContractDesk"
+    }
+  ],
   "extraResources": [
     "dist-electron/electron/preload.cjs"
   ],
   "icon": "./templateIcon.png",
 
-  "publish": "onTag",           
+             
 
   "mac": {
     "target": "dmg"
