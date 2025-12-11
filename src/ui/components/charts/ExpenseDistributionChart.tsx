@@ -93,7 +93,7 @@ export function ExpenseDistributionChart({ data }: { data: ExpenseSlice[] }) {
                     .text((d) => d.category);
             });
 
-        return () => svg.selectAll("*").remove();
+        return () => { svg.selectAll("*").remove(); };
     }, [data, size.height, size.width]);
 
     return (

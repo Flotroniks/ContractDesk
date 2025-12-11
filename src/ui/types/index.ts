@@ -62,6 +62,38 @@ export type ElectronApi = {
     deleteUser: (id: number, password?: string) => Promise<{ propertiesDeleted: number }>;
     verifyUserPassword?: (username: string, password: string) => Promise<UserProfile | null>;
 
+    listProperties: (userId: number) => Promise<Property[]>;
+    createProperty: (data: {
+        userId: number;
+        name: string;
+        address?: string | undefined;
+        city_id?: number | null | undefined;
+        region_id?: number | null | undefined;
+        country_id?: number | null | undefined;
+        department_id?: number | null | undefined;
+        type?: string | undefined;
+        surface?: number | null | undefined;
+        baseRent?: number | null | undefined;
+        baseCharges?: number | null | undefined;
+        purchase_price?: number | null | undefined;
+    }) => Promise<Property>;
+    updateProperty: (data: {
+        id: number;
+        userId: number;
+        name?: string | undefined;
+        address?: string | undefined;
+        city_id?: number | null | undefined;
+        region_id?: number | null | undefined;
+        country_id?: number | null | undefined;
+        department_id?: number | null | undefined;
+        type?: string | undefined;
+        surface?: number | null | undefined;
+        baseRent?: number | null | undefined;
+        baseCharges?: number | null | undefined;
+        purchase_price?: number | null | undefined;
+        status?: string | undefined;
+    }) => Promise<Property>;
+
     listCountries: () => Promise<Country[]>;
     listRegions: (countryId: number) => Promise<Region[]>;
     listCities: (regionId: number, departmentId?: number | null) => Promise<City[]>;

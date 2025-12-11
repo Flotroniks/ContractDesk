@@ -121,7 +121,7 @@ export function CashflowChart({ data, colorScale, cashflowLabel }: Props) {
                     .text((d) => d.propertyName);
             });
 
-        return () => svg.selectAll("*").remove();
+        return () => { svg.selectAll("*").remove(); };
     }, [cashflowLabel, colorScale, data, width]);
 
     return (

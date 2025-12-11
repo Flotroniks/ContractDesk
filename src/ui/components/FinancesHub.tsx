@@ -7,6 +7,10 @@ import { useExpenses } from "../hooks/useExpenses";
 import { useIncomes } from "../hooks/useIncomes";
 import type { ExpenseForm } from "../hooks/useExpenses";
 import type { IncomeForm } from "../hooks/useIncomes";
+import { SelectPropertyDialog } from "./SelectPropertyDialog";
+
+type TranslateFn = ReturnType<typeof useTranslation>["t"];
+import { ImportMovementsDialog } from "./ImportMovementsDialog";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from({ length: 5 }, (_, idx) => currentYear - 2 + idx);
@@ -41,6 +45,11 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
     const incomeAmountRef = useRef<HTMLInputElement | null>(null);
     const [exporting, setExporting] = useState(false);
     const [pendingFocus, setPendingFocus] = useState<"expenses" | "incomes" | null>(null);
+
+    // Import dialogs state
+    const [showPropertySelector, setShowPropertySelector] = useState(false);
+    const [importPropertyId, setImportPropertyId] = useState<number | null>(null);
+    const [showImportDialog, setShowImportDialog] = useState(false);
 
     const { refresh: refreshExpenses, submitExpense, deleteExpense, ...expenseRest } = expenseState;
     const { refresh: refreshIncomes, submitIncome, deleteIncome, ...incomeRest } = incomeState;
@@ -243,9 +252,44 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
                 >
                     {t("finances.incomesTab")}
                 </button>
+                <div className="flex-1" />
+                <button
+                    onClick={() => setShowPropertySelector(true)}
+                    className="rounded-full px-4 py-2 text-sm font-semibold border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition"
+                >
+                    Importer CSV/Excel
+                </button>
             </div>
 
             {panel === "expenses" ? <ExpensesPanel {...expensesProps} /> : <IncomesPanel {...incomesProps} />}
+
+            {/* Import dialogs */}
+            <SelectPropertyDialog
+                properties={activeProperties}
+                open={showPropertySelector}
+                onClose={() => setShowPropertySelector(false)}
+                onConfirm={(propId) => {
+                    setImportPropertyId(propId);
+                    setShowPropertySelector(false);
+                    setShowImportDialog(true);
+                }}
+            />
+
+            {importPropertyId !== null && (
+                <ImportMovementsDialog
+                    electronApi={electronApi}
+                    propertyId={importPropertyId}
+                    propertyName={activeProperties.find((p) => p.id === importPropertyId)?.name ?? "Bien"}
+                    open={showImportDialog}
+                    onClose={() => {
+                        setShowImportDialog(false);
+                        setImportPropertyId(null);
+                    }}
+                    onImportComplete={() => {
+                        void refreshAll();
+                    }}
+                />
+            )}
         </section>
     );
 }
@@ -439,7 +483,7 @@ function CategoryBreakdownCards({
     t,
 }: {
     breakdown: Array<{ category: string; total: number }>;
-    t: (key: string, options?: Record<string, unknown>) => string;
+    t: TranslateFn;
 }) {
     return (
         <div className="space-y-2">
@@ -469,7 +513,7 @@ function MonthDetailModal({
     expenses: ExpensesProps["expenses"];
     cashflow: { income: number; expenses: number; credit: number; cashflow: number } | null;
     onClose: () => void;
-    t: (key: string, options?: Record<string, unknown>) => string;
+    t: TranslateFn;
 }) {
     const incomeTotal = incomes.reduce((sum, i) => sum + (i.amount ?? 0), 0);
     const expenseTotal = expenses.reduce((sum, e) => sum + (e.amount ?? 0), 0);
@@ -529,7 +573,7 @@ function MonthList({
     title: string;
     rows: Array<{ date: string; amount: number; category?: string | null; description?: string | null; payment_method?: string | null }>;
     type: "income" | "expense";
-    t: (key: string, options?: Record<string, unknown>) => string;
+    t: TranslateFn;
 }) {
     return (
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-3">
@@ -587,7 +631,7 @@ function computePaymentStatus(income: number, expected: number): "paid" | "parti
 
 type ExpensesProps = ReturnType<typeof useExpenses> & {
     onAmountChange: (value: string) => void;
-    amountInputRef?: RefObject<HTMLInputElement>;
+    amountInputRef?: RefObject<HTMLInputElement | null>;
 };
 
 function ExpensesPanel({
@@ -763,7 +807,7 @@ function ExpensesPanel({
 
 type IncomesProps = ReturnType<typeof useIncomes> & {
     onAmountChange: (value: string) => void;
-    amountInputRef?: RefObject<HTMLInputElement>;
+    amountInputRef?: RefObject<HTMLInputElement | null>;
 };
 
 function IncomesPanel({ incomes, loading, saving, error, form, setForm, editingId, startEdit, submitIncome, deleteIncome, totals, onAmountChange, amountInputRef }: IncomesProps) {

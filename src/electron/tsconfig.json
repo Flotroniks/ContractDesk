@@ -7,9 +7,19 @@
         "skipLibCheck": true,
         "exactOptionalPropertyTypes": true,
         "isolatedModules": true,
-        // add global types
+        "typeRoots": [
+            "../../node_modules/@types"
+        ],
         "types": [
-            "../../types"
+            "node"
         ]
-    }
+    },
+    "include": [
+        "./**/*.ts",
+        "./**/*.cts",
+        "../../types.d.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
 }

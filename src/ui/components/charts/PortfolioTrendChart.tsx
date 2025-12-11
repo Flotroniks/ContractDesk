@@ -142,7 +142,7 @@ export function PortfolioTrendChart({ data }: { data: MonthlyAggregate[] }) {
                     .text((d) => d.label);
             });
 
-        return () => svg.selectAll("*").remove();
+        return () => { svg.selectAll("*").remove(); };
     }, [data, width]);
 
     return (
