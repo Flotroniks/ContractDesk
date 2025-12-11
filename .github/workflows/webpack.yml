@@ -13,6 +13,8 @@ jobs:
   validate:
     name: Validate (lint, typecheck, test, build)
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     steps:
       - name: Checkout
