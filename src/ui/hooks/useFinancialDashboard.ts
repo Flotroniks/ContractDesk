@@ -1,9 +1,9 @@
 /* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useCallback, useEffect, useState } from "react";
-import type { AnnualSummary, CashflowRow, ElectronApi } from "../types";
+import type { AnnualSummary, CashflowRow, ElectronApi, YearFilter } from "../types";
 
-export function useFinancialDashboard(electronApi: ElectronApi | null, propertyId: number | null, initialYear: number) {
-    const [year, setYear] = useState<number>(initialYear);
+export function useFinancialDashboard(electronApi: ElectronApi | null, propertyId: number | null, initialYear: YearFilter) {
+    const [year, setYear] = useState<YearFilter>(initialYear);
     const [summary, setSummary] = useState<AnnualSummary | null>(null);
     const [cashflow, setCashflow] = useState<CashflowRow[]>([]);
     const [vacancy, setVacancy] = useState<{ vacantMonths: number[]; vacancyRate: number }>({ vacantMonths: [], vacancyRate: 0 });

@@ -38,6 +38,7 @@ import {
     listMonthlyStats,
     getPropertyAnnualSummary,
     listVacancyMonths,
+    getYearRangeForProperty,
     listCreditsByProperty,
     getCreditByProperty,
     saveCredit,
@@ -376,6 +377,11 @@ app.on("ready", () => {
     ipcMainHandle<"listIncomesByProperty">("listIncomesByProperty", (payload) => {
         const list: IncomeRow[] = listIncomesByProperty(payload?.propertyId ?? -1, payload?.year ?? undefined);
         return list;
+    });
+
+    ipcMainHandle<"getYearRangeForProperty">("getYearRangeForProperty", (payload) => {
+        const range = getYearRangeForProperty(payload?.propertyId ?? -1);
+        return range;
     });
 
     ipcMainHandle<"createIncome">("createIncome", (payload) => {
