@@ -22,7 +22,7 @@
 		"release:patch": "npm run pre-release && npm version patch && git push origin main --follow-tags",
   		"release:minor": "npm run pre-release && npm version minor && git push origin main --follow-tags",
   		"release:major": "npm run pre-release && npm version major && git push origin main --follow-tags",
-  		"pre-release": "npm run lint && npm test",
+  		"pre-release": "eslint . &&npm test",
 		"dist:mac": "npm run transpile:electron && npm run build && electron-builder --mac --arm64",
 		"dist:win": "npm run transpile:electron && npm run build && electron-builder --win --x64",
 		"dist:linux": "npm run transpile:electron && npm run build && electron-builder --linux --x64"
