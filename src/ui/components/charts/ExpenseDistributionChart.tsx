@@ -2,6 +2,8 @@
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import type { ExpenseSlice } from "../../hooks/usePortfolioDashboard";
+import { formatCurrency, formatPercentInteger } from "../../lib/formatters";
+import { useTranslation } from "react-i18next";
 
 const COLORS = ["#2563eb", "#10b981", "#f97316", "#a855f7", "#ec4899", "#22c55e", "#6366f1", "#06b6d4"];
 
@@ -9,10 +11,21 @@ const COLORS = ["#2563eb", "#10b981", "#f97316", "#a855f7", "#ec4899", "#22c55e"
  * Donut chart for expense distribution by category.
  */
 export function ExpenseDistributionChart({ data }: { data: ExpenseSlice[] }) {
+    const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement | null>(null);
     const svgRef = useRef<SVGSVGElement | null>(null);
     const tooltipRef = useRef<HTMLDivElement | null>(null);
     const [size, setSize] = useState({ width: 0, height: 0 });
+
+    /**
+     * Get a localized category label from i18n.
+     */
+    const getCategoryLabel = (category: string): string => {
+        const normalized = category.toLowerCase().trim();
+        const key = `expenseCategories.${normalized}`;
+        const translation = t(key);
+        return translation === key ? category : translation;
+    };
 
     useEffect(() => {
         const el = containerRef.current;
@@ -47,14 +60,14 @@ export function ExpenseDistributionChart({ data }: { data: ExpenseSlice[] }) {
         const showTooltip = (event: MouseEvent, d: d3.PieArcDatum<ExpenseSlice>) => {
             if (!containerRef.current) return;
             const [xPos, yPos] = d3.pointer(event, containerRef.current);
+            const total = d3.sum(data, (s) => s.total);
+            const percentage = (d.data.total / total) * 100;
             tooltip
                 .style("opacity", 1)
                 .style("left", `${xPos + 12}px`)
                 .style("top", `${yPos - 10}px`)
                 .html(
-                    `<div><strong>${d.data.category}</strong></div><div>${d.data.total.toLocaleString()} €</div><div>${Math.round(
-                        (d.data.total / d3.sum(data, (s) => s.total)) * 100
-                    )}%</div>`
+                    `<div><strong>${getCategoryLabel(d.data.category)}</strong></div><div>${formatCurrency(d.data.total)}</div><div>${formatPercentInteger(percentage)}</div>`
                 );
         };
         const hideTooltip = () => tooltip.style("opacity", 0);
@@ -90,11 +103,11 @@ export function ExpenseDistributionChart({ data }: { data: ExpenseSlice[] }) {
                     .append("text")
                     .attr("x", 16)
                     .attr("y", 10)
-                    .text((d) => d.category);
+                    .text((d) => getCategoryLabel(d.category));
             });
 
-        return () => svg.selectAll("*").remove();
-    }, [data, size.height, size.width]);
+        return () => { svg.selectAll("*").remove(); };
+    }, [data, size.height, size.width, getCategoryLabel]);
 
     return (
         <div ref={containerRef} className="relative h-[260px] w-full">

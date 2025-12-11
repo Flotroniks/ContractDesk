@@ -1164,6 +1164,34 @@ export function listIncomesByProperty(propertyId: number, year?: number): Income
 }
 
 /**
+ * Get the year range (minYear, maxYear) for a property based on its income and expense movements.
+ * Returns null if the property has no movements at all.
+ */
+export function getYearRangeForProperty(propertyId: number): { minYear: number; maxYear: number } | null {
+  const db = getDb();
+  
+  const result = db.prepare(`
+    SELECT 
+      MIN(date) as minDate,
+      MAX(date) as maxDate
+    FROM (
+      SELECT date FROM incomes WHERE property_id = ?
+      UNION ALL
+      SELECT date FROM expenses WHERE property_id = ?
+    )
+  `).get(propertyId, propertyId) as { minDate: string | null; maxDate: string | null } | undefined;
+  
+  if (!result || !result.minDate || !result.maxDate) {
+    return null;
+  }
+  
+  const minYear = parseInt(result.minDate.substring(0, 4), 10);
+  const maxYear = parseInt(result.maxDate.substring(0, 4), 10);
+  
+  return { minYear, maxYear };
+}
+
+/**
  * List credits for a property after marking finished ones inactive.
  */
 export function listCreditsByProperty(propertyId: number): CreditRow[] {

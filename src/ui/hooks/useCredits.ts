@@ -145,8 +145,7 @@ export function useCredits(electronApi: ElectronApi | null, propertyId: number |
         try {
             const isRefinancing = refinanceFromId != null;
             const today = new Date().toISOString().slice(0, 10);
-            const saved = await electronApi.saveCredit({
-                id: isRefinancing ? undefined : form.id,
+            const payload: Parameters<typeof electronApi.saveCredit>[0] = {
                 user_id: userId,
                 property_id: propertyId,
                 credit_type: creditType,
@@ -161,7 +160,11 @@ export function useCredits(electronApi: ElectronApi | null, propertyId: number |
                     : form.notes || null,
                 is_active: isRefinancing ? 1 : form.is_active ? 1 : 0,
                 refinance_from_id: refinanceFromId,
-            });
+            };
+            if (!isRefinancing && form.id !== undefined) {
+                payload.id = form.id;
+            }
+            const saved = await electronApi.saveCredit(payload);
             setForm(creditToForm(saved));
             setRefinanceFromId(null);
             await loadCredits();
@@ -214,9 +217,9 @@ export function useCredits(electronApi: ElectronApi | null, propertyId: number |
     const startRefinance = useCallback((credit: Credit) => {
         const base = creditToForm(credit);
         setRefinanceFromId(credit.id);
+        const { id: _unused, ...withoutId } = base;
         setForm({
-            ...base,
-            id: undefined,
+            ...withoutId,
             credit_type: credit.credit_type || "Refinancement",
             is_active: true,
         });

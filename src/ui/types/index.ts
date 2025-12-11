@@ -24,6 +24,13 @@ export type Property = {
 
 export type TabKey = "dashboard" | "finances" | "properties" | "stats";
 
+export type YearFilter = number | 'all';
+
+export type YearRange = {
+    minYear: number;
+    maxYear: number;
+};
+
 export type MonthlyStat = {
     month: number;
     income: number;
@@ -62,6 +69,38 @@ export type ElectronApi = {
     deleteUser: (id: number, password?: string) => Promise<{ propertiesDeleted: number }>;
     verifyUserPassword?: (username: string, password: string) => Promise<UserProfile | null>;
 
+    listProperties: (userId: number) => Promise<Property[]>;
+    createProperty: (data: {
+        userId: number;
+        name: string;
+        address?: string | undefined;
+        city_id?: number | null | undefined;
+        region_id?: number | null | undefined;
+        country_id?: number | null | undefined;
+        department_id?: number | null | undefined;
+        type?: string | undefined;
+        surface?: number | null | undefined;
+        baseRent?: number | null | undefined;
+        baseCharges?: number | null | undefined;
+        purchase_price?: number | null | undefined;
+    }) => Promise<Property>;
+    updateProperty: (data: {
+        id: number;
+        userId: number;
+        name?: string | undefined;
+        address?: string | undefined;
+        city_id?: number | null | undefined;
+        region_id?: number | null | undefined;
+        country_id?: number | null | undefined;
+        department_id?: number | null | undefined;
+        type?: string | undefined;
+        surface?: number | null | undefined;
+        baseRent?: number | null | undefined;
+        baseCharges?: number | null | undefined;
+        purchase_price?: number | null | undefined;
+        status?: string | undefined;
+    }) => Promise<Property>;
+
     listCountries: () => Promise<Country[]>;
     listRegions: (countryId: number) => Promise<Region[]>;
     listCities: (regionId: number, departmentId?: number | null) => Promise<City[]>;
@@ -71,7 +110,7 @@ export type ElectronApi = {
     createCity: (regionId: number, countryId: number, departmentId: number | null, name: string) => Promise<City>;
     createDepartment: (regionId: number, name: string) => Promise<Department>;
 
-    listExpensesByProperty: (propertyId: number, year?: number) => Promise<Expense[]>;
+    listExpensesByProperty: (propertyId: number, year?: YearFilter) => Promise<Expense[]>;
     createExpense: (payload: {
         property_id: number;
         date: string;
@@ -95,7 +134,7 @@ export type ElectronApi = {
     deleteExpense: (id: number) => Promise<void>;
     listCategories?: (type: "expense" | "income") => Promise<Category[]>;
 
-    listIncomesByProperty: (propertyId: number, year?: number) => Promise<Income[]>;
+    listIncomesByProperty: (propertyId: number, year?: YearFilter) => Promise<Income[]>;
     createIncome: (payload: {
         property_id: number;
         lease_id: number | null;
@@ -121,12 +160,13 @@ export type ElectronApi = {
     saveCredit: (payload: CreditSavePayload) => Promise<Credit>;
     deleteCredit: (id: number) => Promise<{ success?: boolean } | void>;
 
-    getPropertyAnnualSummary: (propertyId: number, year: number, purchasePrice?: number | null) => Promise<AnnualSummary>;
-    listCashflowByProperty: (propertyId: number, year: number) => Promise<CashflowRow[]>;
-    listVacancyMonths: (propertyId: number, year: number) => Promise<{ vacantMonths: number[]; vacancyRate: number }>;
+    getPropertyAnnualSummary: (propertyId: number, year: YearFilter, purchasePrice?: number | null) => Promise<AnnualSummary>;
+    listCashflowByProperty: (propertyId: number, year: YearFilter) => Promise<CashflowRow[]>;
+    listVacancyMonths: (propertyId: number, year: YearFilter) => Promise<{ vacantMonths: number[]; vacancyRate: number }>;
     exportFinanceExcel: (propertyId: number, year: number, outputPath?: string) => Promise<void>;
 
-    getMonthlyStats: (propertyId: number, year: number) => Promise<MonthlyStat[]>;
+    getYearRangeForProperty: (propertyId: number) => Promise<YearRange | null>;
+    getMonthlyStats: (propertyId: number, year: YearFilter) => Promise<MonthlyStat[]>;
 };
 
 export type NumberParseResult = { 

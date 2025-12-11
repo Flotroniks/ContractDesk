@@ -1,6 +1,6 @@
 /* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ElectronApi, Income } from "../types";
+import type { ElectronApi, Income, YearFilter } from "../types";
 import { parseNumberInput } from "../utils/numberParser";
 
 export type IncomeForm = {
@@ -18,9 +18,9 @@ const emptyIncomeForm: IncomeForm = {
     notes: "",
 };
 
-export function useIncomes(electronApi: ElectronApi | null, propertyId: number | null, initialYear: number) {
+export function useIncomes(electronApi: ElectronApi | null, propertyId: number | null, initialYear: YearFilter) {
     const [incomes, setIncomes] = useState<Income[]>([]);
-    const [year, setYear] = useState<number>(initialYear);
+    const [year, setYear] = useState<YearFilter>(initialYear);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
