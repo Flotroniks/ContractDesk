@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 /* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
-import type { ElectronApi, Property } from "../types";
+import type { ElectronApi, Property, YearFilter, YearRange } from "../types";
 import { useFinancialDashboard } from "../hooks/useFinancialDashboard";
 import { useExpenses } from "../hooks/useExpenses";
 import { useIncomes } from "../hooks/useIncomes";
@@ -28,19 +28,53 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
     const { t } = useTranslation();
     const activeProperties = useMemo(() => properties.filter((p) => p.status !== "archived"), [properties]);
     const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(initialPropertyId ?? null);
-    const [year, setYear] = useState<number>(currentYear);
+    const [yearFilter, setYearFilter] = useState<YearFilter>(currentYear);
+    const [yearRange, setYearRange] = useState<YearRange | null>(null);
+    const [displayYear, setDisplayYear] = useState<number>(currentYear);
     const [panel, setPanel] = useState<"expenses" | "incomes">("expenses");
+    
     useEffect(() => {
         if (!selectedPropertyId && activeProperties.length > 0) {
             setSelectedPropertyId(activeProperties[0].id);
         }
     }, [activeProperties, selectedPropertyId]);
 
-    const { summary, cashflow, vacancy, loading: dashboardLoading, error: dashboardError, refresh: refreshDashboard } =
-        useFinancialDashboard(electronApi, selectedPropertyId, year);
+    // Load year range when property changes
+    useEffect(() => {
+        const loadYearRange = async () => {
+            if (!electronApi?.getYearRangeForProperty || !selectedPropertyId) {
+                setYearRange(null);
+                return;
+            }
+            try {
+                const range = await electronApi.getYearRangeForProperty(selectedPropertyId);
+                setYearRange(range);
+                if (range) {
+                    setDisplayYear(range.maxYear);
+                    if (yearFilter === 'all') {
+                        setDisplayYear(range.maxYear);
+                    }
+                } else {
+                    setDisplayYear(currentYear);
+                }
+            } catch (err) {
+                console.error("Failed to load year range:", err);
+                setYearRange(null);
+            }
+        };
+        void loadYearRange();
+    }, [electronApi, selectedPropertyId, yearFilter]);
 
-    const expenseState = useExpenses(electronApi, selectedPropertyId, year);
-    const incomeState = useIncomes(electronApi, selectedPropertyId, year);
+    // Compute effective year for data loading
+    const effectiveYear = useMemo(() => {
+        return yearFilter === 'all' ? displayYear : yearFilter;
+    }, [yearFilter, displayYear]);
+
+    const { summary, cashflow, vacancy, loading: dashboardLoading, error: dashboardError, refresh: refreshDashboard } =
+        useFinancialDashboard(electronApi, selectedPropertyId, yearFilter === 'all' ? effectiveYear : yearFilter);
+
+    const expenseState = useExpenses(electronApi, selectedPropertyId, yearFilter === 'all' ? effectiveYear : yearFilter);
+    const incomeState = useIncomes(electronApi, selectedPropertyId, yearFilter === 'all' ? effectiveYear : yearFilter);
     const expenseAmountRef = useRef<HTMLInputElement | null>(null);
     const incomeAmountRef = useRef<HTMLInputElement | null>(null);
     const [exporting, setExporting] = useState(false);
@@ -56,6 +90,30 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
 
     const [detailMonth, setDetailMonth] = useState<number | null>(null);
 
+    // Year navigation handlers
+    const goToPreviousYear = useCallback(() => {
+        if (!yearRange) return;
+        setDisplayYear((prev) => Math.max(prev - 1, yearRange.minYear));
+    }, [yearRange]);
+
+    const goToNextYear = useCallback(() => {
+        if (!yearRange) return;
+        setDisplayYear((prev) => Math.min(prev + 1, yearRange.maxYear));
+    }, [yearRange]);
+
+    const handleYearFilterChange = useCallback((value: string) => {
+        if (value === 'all') {
+            setYearFilter('all');
+            if (yearRange) {
+                setDisplayYear(yearRange.maxYear);
+            }
+        } else {
+            const numYear = Number(value);
+            setYearFilter(numYear);
+            setDisplayYear(numYear);
+        }
+    }, [yearRange]);
+
     const refreshAll = useCallback(async () => {
         await Promise.allSettled([refreshDashboard(), refreshExpenses(), refreshIncomes()]);
     }, [refreshDashboard, refreshExpenses, refreshIncomes]);
@@ -66,12 +124,12 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
             void refreshAll();
         }, 30000);
         return () => clearInterval(id);
-    }, [refreshAll, selectedPropertyId, year]);
+    }, [refreshAll, selectedPropertyId, yearFilter, displayYear]);
 
     useEffect(() => {
         if (!selectedPropertyId) return;
         void refreshAll();
-    }, [selectedPropertyId, year, refreshAll]);
+    }, [selectedPropertyId, yearFilter, displayYear, refreshAll]);
 
     const handleSignedAmountChange = (raw: string, source: "expenses" | "incomes") => {
         const trimmed = raw.trim();
@@ -190,16 +248,40 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
                 <div className="flex flex-col gap-2">
                     <label className="text-xs font-semibold text-slate-600">{t("finances.yearLabel")}</label>
                     <select
-                        value={year}
-                        onChange={(e) => setYear(Number(e.target.value))}
+                        value={yearFilter}
+                        onChange={(e) => handleYearFilterChange(e.target.value)}
                         className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
                     >
+                        <option value="all">Toutes</option>
                         {yearOptions.map((y) => (
                             <option key={y} value={y}>
                                 {y}
                             </option>
                         ))}
                     </select>
+                    {yearFilter === 'all' && yearRange && (
+                        <div className="flex items-center gap-2 mt-1">
+                            <button
+                                onClick={goToPreviousYear}
+                                disabled={displayYear <= yearRange.minYear}
+                                className="px-2 py-1 text-xs font-medium text-slate-700 bg-slate-100 rounded hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                                title="Année précédente"
+                            >
+                                ← {displayYear - 1}
+                            </button>
+                            <span className="text-xs text-slate-600 font-medium">
+                                Année affichée : {displayYear} ({yearRange.minYear} → {yearRange.maxYear})
+                            </span>
+                            <button
+                                onClick={goToNextYear}
+                                disabled={displayYear >= yearRange.maxYear}
+                                className="px-2 py-1 text-xs font-medium text-slate-700 bg-slate-100 rounded hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                                title="Année suivante"
+                            >
+                                {displayYear + 1} →
+                            </button>
+                        </div>
+                    )}
                 </div>
                 <div className="flex-1" />
                 <div className="text-sm text-slate-500">{selectedLabel}</div>
@@ -215,7 +297,8 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
                     if (!electronApi || !selectedPropertyId) return;
                     setExporting(true);
                     try {
-                        await electronApi.exportFinanceExcel(selectedPropertyId, year, undefined);
+                        const exportYear = yearFilter === 'all' ? currentYear : yearFilter;
+                        await electronApi.exportFinanceExcel(selectedPropertyId, exportYear, undefined);
                     } catch (err) {
                         console.error(err);
                     } finally {

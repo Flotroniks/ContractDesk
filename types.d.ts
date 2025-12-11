@@ -181,6 +181,7 @@ type EventPayloadArgs = {
         refinance_from_id?: number | null;
     };
     deleteCredit: { id: number };
+    getYearRangeForProperty: { propertyId: number };
 }
 
 type StaticData = {
@@ -214,6 +215,7 @@ type EventPayloadMapping = {
     saveCredit: Credit;
     deleteCredit: { success: boolean };
     getMonthlyStats?: Array<{ month: number; income: number; expense: number; credit: number; cashflow: number; vacancy: number }>;
+    getYearRangeForProperty: YearRange | null;
 }
 
 interface Window {

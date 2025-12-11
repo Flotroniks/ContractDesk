@@ -125,6 +125,7 @@ type EventPayloadArgs = {
         refinance_from_id?: number | null | undefined;
     };
     deleteCredit: { id: number };
+    getYearRangeForProperty: { propertyId: number };
     listCategories: { type: "expense" | "income" };
     upsertCategory: { type: "expense" | "income"; name: string };
     listAmortizationsByProperty: { propertyId: number };
@@ -219,6 +220,7 @@ type EventPayloadMapping = {
     getCreditByProperty: CreditRow | null;
     saveCredit: CreditRow;
     deleteCredit: { success: boolean };
+    getYearRangeForProperty: { minYear: number; maxYear: number } | null;
     listCategories: CategoryRow[];
     upsertCategory: CategoryRow;
     listAmortizationsByProperty: AmortizationRow[];

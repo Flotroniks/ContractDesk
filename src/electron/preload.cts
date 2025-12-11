@@ -86,6 +86,7 @@ type EventPayloadArgs = {
         notes?: string | null;
     };
     deleteIncome: { id: number };
+    getYearRangeForProperty: { propertyId: number };
     listCreditsByProperty: { propertyId: number };
     getCreditByProperty: { propertyId: number };
     saveCredit: {
@@ -290,6 +291,7 @@ type EventPayloadMapping = {
     createIncome: Income;
     updateIncome: Income;
     deleteIncome: { success: boolean };
+    getYearRangeForProperty: { minYear: number; maxYear: number } | null;
     listCreditsByProperty: Credit[];
     getCreditByProperty: Credit | null;
     saveCredit: Credit;
@@ -418,6 +420,7 @@ const api = {
         if (year !== undefined) payload.year = year;
         return ipcInvoke("listIncomesByProperty", payload);
     },
+    getYearRangeForProperty: (propertyId: number) => ipcInvoke("getYearRangeForProperty", { propertyId }),
     createIncome: (data: EventPayloadArgs['createIncome']) => {
         const payload: EventPayloadArgs['createIncome'] = {
             property_id: data.property_id,

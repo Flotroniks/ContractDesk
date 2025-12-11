@@ -1,6 +1,6 @@
 /* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-type, jsdoc/check-tag-names */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Category, ElectronApi, Expense } from "../types";
+import type { Category, ElectronApi, Expense, YearFilter } from "../types";
 import { parseNumberInput } from "../utils/numberParser";
 
 export type ExpenseForm = {
@@ -21,10 +21,10 @@ const emptyExpenseForm: ExpenseForm = {
     frequency: "",
 };
 
-export function useExpenses(electronApi: ElectronApi | null, propertyId: number | null, initialYear: number) {
+export function useExpenses(electronApi: ElectronApi | null, propertyId: number | null, initialYear: YearFilter) {
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [year, setYear] = useState<number>(initialYear);
+    const [year, setYear] = useState<YearFilter>(initialYear);
     const [categoryFilter, setCategoryFilter] = useState<string>("");
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
