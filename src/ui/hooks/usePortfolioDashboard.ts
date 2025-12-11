@@ -2,6 +2,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ElectronApi, Property } from "../types";
 import { getMonthlyStatsForProperties } from "./useMonthlyStats";
+import { formatCurrency, formatPercentInteger } from "../lib/formatters";
+import { useTranslation } from "react-i18next";
 
 export type MonthlyAggregate = {
     month: number;
@@ -25,6 +27,7 @@ export type PropertyPerformance = {
 export type ExpenseSlice = { category: string; total: number };
 
 export function usePortfolioDashboard(electronApi: ElectronApi | null, properties: Property[], initialYear: number) {
+    const { t } = useTranslation();
     const [year, setYear] = useState(initialYear);
     const [monthlyAggregates, setMonthlyAggregates] = useState<MonthlyAggregate[]>([]);
     const [performances, setPerformances] = useState<PropertyPerformance[]>([]);
@@ -145,16 +148,51 @@ export function usePortfolioDashboard(electronApi: ElectronApi | null, propertie
     const alerts = useMemo(() => {
         const list: Array<{ type: "warning" | "info" | "danger"; message: string }> = [];
         performances.forEach((p) => {
-            if (p.cashflow < 0) list.push({ type: "danger", message: `${p.propertyName}: tresorerie negative (${p.cashflow.toLocaleString()} €)` });
-            if (p.vacancyRate > 0.2) list.push({ type: "warning", message: `${p.propertyName}: vacance elevee (${Math.round(p.vacancyRate * 100)}%)` });
-            if (p.expenses > 0 && p.cashflow < p.expenses * 0.1)
-                list.push({ type: "info", message: `${p.propertyName}: marge faible (${Math.round((p.cashflow / p.expenses) * 100)}% du budget)` });
+            if (p.cashflow < 0) {
+                list.push({ 
+                    type: "danger", 
+                    message: t("finances.portfolioAlertNegativeCashflow", { 
+                        property: p.propertyName, 
+                        amount: formatCurrency(p.cashflow) 
+                    })
+                });
+            }
+            if (p.vacancyRate > 0.2) {
+                list.push({ 
+                    type: "warning", 
+                    message: t("finances.portfolioAlertHighVacancy", { 
+                        property: p.propertyName, 
+                        rate: formatPercentInteger(p.vacancyRate * 100) 
+                    })
+                });
+            }
+            if (p.expenses > 0 && p.cashflow < p.expenses * 0.1) {
+                const marginPercent = Math.round((p.cashflow / p.expenses) * 100);
+                list.push({ 
+                    type: "info", 
+                    message: t("finances.portfolioAlertLowMargin", { 
+                        property: p.propertyName, 
+                        percentage: formatPercentInteger(marginPercent) 
+                    })
+                });
+            }
         });
-        if (kpis.occupancyRate < 0.85)
-            list.push({ type: "warning", message: `Occupation moyenne basse (${Math.round(kpis.occupancyRate * 100)}%)` });
-        if (kpis.netCashflow < 0) list.push({ type: "danger", message: "Cashflow global negatif" });
+        if (kpis.occupancyRate < 0.85) {
+            list.push({ 
+                type: "warning", 
+                message: t("finances.portfolioAlertLowOccupancy", { 
+                    rate: formatPercentInteger(kpis.occupancyRate * 100) 
+                })
+            });
+        }
+        if (kpis.netCashflow < 0) {
+            list.push({ 
+                type: "danger", 
+                message: t("finances.portfolioAlertGlobalNegativeCashflow")
+            });
+        }
         return list;
-    }, [kpis.netCashflow, kpis.occupancyRate, performances]);
+    }, [kpis.netCashflow, kpis.occupancyRate, performances, t]);
 
     return {
         year,
