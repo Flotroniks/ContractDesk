@@ -1,0 +1,122 @@
+date,amount,category,description
+2020-01-05,680,loyer,Loyer janvier 2020
+2020-02-05,680,loyer,Loyer février 2020
+2020-03-05,680,loyer,Loyer mars 2020
+2020-04-05,680,loyer,Loyer avril 2020
+2020-05-05,680,loyer,Loyer mai 2020
+2020-06-05,680,loyer,Loyer juin 2020
+2020-07-05,680,loyer,Loyer juillet 2020
+2020-08-05,680,loyer,Loyer août 2020
+2020-09-05,680,loyer,Loyer septembre 2020
+2020-10-05,680,loyer,Loyer octobre 2020
+2020-11-05,680,loyer,Loyer novembre 2020
+2020-12-05,680,loyer,Loyer décembre 2020
+
+2020-02-20,95,entretien,Réparation chasse d'eau
+2020-04-15,165,copro,Copropriété trimestre 1
+2020-07-10,180,copro,Copropriété trimestre 2
+2020-09-22,250,travaux,Peinture couloir
+2020-10-14,235,assurance,Assurance habitation
+2020-11-25,2100,travaux,Rénovation salle de bain complète
+2020-12-12,170,taxe,Taxe ordures ménagères 2020
+
+2021-01-05,700,loyer,Loyer janvier 2021
+2021-02-05,700,loyer,Loyer février 2021
+2021-03-05,700,loyer,Loyer mars 2021
+2021-04-05,700,loyer,Loyer avril 2021
+2021-05-05,700,loyer,Loyer mai 2021
+2021-06-05,700,loyer,Loyer juin 2021
+2021-07-05,700,loyer,Loyer juillet 2021
+2021-08-05,0,loyer,Vacance locative août 2021
+2021-09-05,0,loyer,Vacance locative septembre 2021
+2021-10-05,700,loyer,Nouveau locataire octobre 2021
+2021-11-05,700,loyer,Loyer novembre 2021
+2021-12-05,700,loyer,Loyer décembre 2021
+
+2021-01-28,110,entretien,Remplacement poignée fenêtre
+2021-03-18,180,copro,Copropriété trimestre 1
+2021-06-20,180,copro,Copropriété trimestre 2
+2021-09-05,60,entretien,Détartrage chauffe-eau
+2021-10-22,245,assurance,Assurance habitation
+2021-12-10,175,taxe,Taxe ordures ménagères 2021
+
+2022-01-05,720,loyer,Loyer janvier 2022
+2022-02-05,720,loyer,Loyer février 2022
+2022-03-05,720,loyer,Loyer mars 2022
+2022-04-05,720,loyer,Loyer avril 2022
+2022-05-05,720,loyer,Loyer mai 2022
+2022-06-05,720,loyer,Loyer juin 2022
+2022-07-05,720,loyer,Loyer juillet 2022
+2022-08-05,720,loyer,Loyer août 2022
+2022-09-05,720,loyer,Loyer septembre 2022
+2022-10-05,720,loyer,Loyer octobre 2022
+2022-11-05,720,loyer,Loyer novembre 2022
+2022-12-05,720,loyer,Loyer décembre 2022
+
+2022-02-12,140,entretien,Remplacement joints robinetterie
+2022-03-22,185,copro,Copropriété trimestre 1
+2022-06-18,185,copro,Copropriété trimestre 2
+2022-07-30,890,travaux,Changement VMC
+2022-09-16,280,assurance,Assurance habitation
+2022-12-02,190,taxe,Taxe ordures ménagères 2022
+
+2023-01-05,740,loyer,Loyer janvier 2023
+2023-02-05,740,loyer,Loyer février 2023
+2023-03-05,740,loyer,Loyer mars 2023
+2023-04-05,740,loyer,Loyer avril 2023
+2023-05-05,740,loyer,Loyer mai 2023
+2023-06-05,740,loyer,Loyer juin 2023
+2023-07-05,740,loyer,Loyer juillet 2023
+2023-08-05,740,loyer,Loyer août 2023
+2023-09-05,740,loyer,Loyer septembre 2023
+2023-10-05,740,loyer,Loyer octobre 2023
+2023-11-05,740,loyer,Loyer novembre 2023
+2023-12-05,740,loyer,Loyer décembre 2023
+
+2023-03-14,150,entretien,Réparation serrure entrée
+2023-04-09,190,copro,Copro trimestre 1
+2023-06-22,2200,travaux,Remplacement fenêtres isolation thermique
+2023-09-10,185,copro,Copro trimestre 3
+2023-10-24,305,assurance,Assurance habitation
+2023-12-08,210,taxe,Taxe ordures ménagères 2023
+
+2024-01-05,760,loyer,Loyer janvier 2024
+2024-02-05,0,loyer,Vacance locative février 2024
+2024-03-05,760,loyer,Nouveau locataire mars 2024
+2024-04-05,760,loyer,Loyer avril 2024
+2024-05-05,760,loyer,Loyer mai 2024
+2024-06-05,760,loyer,Loyer juin 2024
+2024-07-05,760,loyer,Loyer juillet 2024
+2024-08-05,760,loyer,Loyer août 2024
+2024-09-05,760,loyer,Loyer septembre 2024
+2024-10-05,760,loyer,Loyer octobre 2024
+2024-11-05,760,loyer,Loyer novembre 2024
+2024-12-05,760,loyer,Loyer décembre 2024
+
+2024-02-18,165,copro,Copro trimestre 1
+2024-03-20,130,entretien,Réglage mécanisme volet
+2024-06-15,165,copro,Copro trimestre 2
+2024-08-22,430,travaux,Remplacement radiateur chambre
+2024-10-19,295,assurance,Assurance habitation
+2024-12-02,225,taxe,Taxe ordures ménagères 2024
+
+2025-01-05,780,loyer,Loyer janvier 2025
+2025-02-05,780,loyer,Loyer février 2025
+2025-03-05,780,loyer,Loyer mars 2025
+2025-04-05,780,loyer,Loyer avril 2025
+2025-05-05,780,loyer,Loyer mai 2025
+2025-06-05,780,loyer,Loyer juin 2025
+2025-07-05,780,loyer,Loyer juillet 2025
+2025-08-05,780,loyer,Loyer août 2025
+2025-09-05,780,loyer,Loyer septembre 2025
+2025-10-05,780,loyer,Loyer octobre 2025
+2025-11-05,780,loyer,Loyer novembre 2025
+2025-12-05,780,loyer,Loyer décembre 2025
+
+2025-01-18,190,copro,Copro trimestre 1
+2025-03-12,95,entretien,Remplacement flexible douche
+2025-05-23,2750,travaux,Mise aux normes électrique complète
+2025-06-20,190,copro,Copro trimestre 2
+2025-09-14,130,entretien,Nettoyage VMC
+2025-10-28,320,assurance,Assurance habitation
+2025-12-03,235,taxe,Taxe ordures ménagères 2025

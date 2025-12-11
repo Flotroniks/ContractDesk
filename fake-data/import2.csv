@@ -1,0 +1,45 @@
+date,amount,category,description
+2024-01-10,1450,loyer,Loyer janvier 2024
+2024-02-10,1450,loyer,Loyer février 2024
+2024-03-10,1450,loyer,Loyer mars 2024
+2024-04-10,1450,loyer,Loyer avril 2024
+
+2024-05-10,0,loyer,Vacance locative mai (appartement vide)
+2024-06-10,0,loyer,Vacance locative juin (pas de locataire)
+
+2024-07-15,1500,loyer,Loyer juillet 2024 (nouveau locataire)
+2024-08-10,1500,loyer,Loyer août 2024
+2024-09-10,1500,loyer,Loyer septembre 2024
+2024-10-10,1500,loyer,Loyer octobre 2024
+2024-11-10,1500,loyer,Loyer novembre 2024
+2024-12-10,1500,loyer,Loyer décembre 2024
+
+2024-01-20,95,entretien,Détartrage chauffe-eau
+2024-03-25,180,electricite,Électricité des communs
+2024-05-03,420,copro,Copropriété trimestre 1
+2024-07-22,750,travaux,Rénovation cuisine (meubles)
+2024-09-02,330,assurance,Assurance habitation
+2024-11-30,180,copro,Copropriété trimestre 3
+
+2025-01-10,1550,loyer,Loyer janvier 2025 (augmentation)
+2025-02-10,1550,loyer,Loyer février 2025
+2025-03-10,1550,loyer,Loyer mars 2025
+
+2025-04-10,0,loyer,Impaye avril (ALUR déclenchée)
+2025-05-10,1550,loyer,Régularisation avril + loyer mai
+
+2025-06-10,1550,loyer,Loyer juin 2025
+2025-07-10,1550,loyer,Loyer juillet 2025
+2025-08-10,1550,loyer,Loyer août 2025
+2025-09-10,1550,loyer,Loyer septembre 2025
+2025-10-10,1550,loyer,Loyer octobre 2025
+2025-11-10,1550,loyer,Loyer novembre 2025
+2025-12-10,1550,loyer,Loyer décembre 2025
+
+2025-02-14,260,electricite,Électricité des communs
+2025-04-12,620,copro,Copropriété trimestre 2
+2025-06-18,210,assurance,Assurance habitation
+2025-08-09,2150,degat,Fuite salle de bain + remplacement receveur
+2025-10-03,180,copro,Copropriété trimestre 4
+2025-11-22,350,entretien,Débouchage colonnes d’évacuation
+2025-12-15,400,travaux,Peinture salon après dégât des eaux

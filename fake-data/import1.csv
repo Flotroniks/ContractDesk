@@ -1,0 +1,38 @@
+date,amount,category,description
+2024-01-05,1000,loyer,Loyer janvier 2024
+2024-02-05,1000,loyer,Loyer février 2024
+2024-03-05,1000,loyer,Loyer mars 2024
+2024-04-05,1000,loyer,Loyer avril 2024
+2024-05-05,1000,loyer,Loyer mai 2024
+2024-06-05,1000,loyer,Loyer juin 2024
+2024-07-05,1000,loyer,Loyer juillet 2024
+2024-08-05,1000,loyer,Loyer août 2024
+2024-09-05,1000,loyer,Loyer septembre 2024
+2024-10-05,1000,loyer,Loyer octobre 2024
+2024-11-05,1000,loyer,Loyer novembre 2024
+2024-12-05,1000,loyer,Loyer décembre 2024
+
+2024-02-15,120,entretien,Remplacement robinet cuisine
+2024-04-10,85,entretien,Petites réparations salle de bain
+2024-06-20,950,travaux,Peinture chambre
+2024-09-18,320,assurance,Prime assurance habitation trimestrielle
+2024-11-25,180,taxe,Taxe ordures ménagères 2024
+
+2025-01-05,1020,loyer,Loyer janvier 2025 (révision annuelle)
+2025-02-05,1020,loyer,Loyer février 2025
+2025-03-05,1020,loyer,Loyer mars 2025
+2025-04-05,1020,loyer,Loyer avril 2025
+2025-05-05,1020,loyer,Loyer mai 2025
+2025-06-05,1020,loyer,Loyer juin 2025
+2025-07-05,1020,loyer,Loyer juillet 2025
+2025-08-05,1020,loyer,Loyer août 2025
+2025-09-05,1020,loyer,Loyer septembre 2025
+2025-10-05,1020,loyer,Loyer octobre 2025
+2025-11-05,1020,loyer,Loyer novembre 2025
+2025-12-05,1020,loyer,Loyer décembre 2025
+
+2025-01-20,150,entretien,Désembouage radiateurs
+2025-03-12,260,assurance,Prime assurance habitation trimestrielle
+2025-05-22,130,entretien,Remplacement flexible douche
+2025-08-03,1800,degat,Dégât des eaux cuisine – intervention plombier
+2025-10-18,210,taxe,Taxe ordures ménagères 2025
