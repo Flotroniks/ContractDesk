@@ -2,13 +2,15 @@ name: CI & Build
 
 on:
   push:
-    branches: [ "dev", "main" ]
+    branches: [ "dev", "main" ]   # CI sur push classique
+    tags:
+      - "v*"                      # CI aussi sur push de tag v0.1.0, v1.2.3, etc.
   pull_request:
     branches: [ "dev", "main" ]
 
 jobs:
   # ================================================================
-  # 1) VALIDATION JOB — runs for BOTH dev and main
+  # 1) VALIDATION JOB — runs for branches AND tags
   # ================================================================
   validate:
     name: Validate (lint, typecheck, test, build)
@@ -40,12 +42,13 @@ jobs:
         run: npm run build
 
   # ================================================================
-  # 2) MULTI-PLATFORM ELECTRON BUILD — ONLY ON MAIN
+  # 2) MULTI-PLATFORM ELECTRON BUILD — ONLY ON TAGS v*
   # ================================================================
   build-electron:
     name: Build Electron (Linux / macOS / Windows)
     needs: validate
-    if: github.ref == 'refs/heads/main'
+    # On ne build/publish que pour les tags de release, pas pour chaque push
+    if: startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
