@@ -1,24 +1,27 @@
 {
-    "appId": "com.georgimy.electron-template",
-    "files": [
-        "dist-electron",
-        "dist-react"
-    ],
-    "extraResources": [
-        "dist-electron/electron/preload.cjs"
-    ],
-    "icon": "./templateIcon.png",
-    "mac": {
-        "target": "dmg"
-    },
-    "linux": {
-        "target": "AppImage",
-        "category": "Utility"
-    },
-    "win": {
-        "target": [
-            "portable",
-            "msi"
-        ]
-    }
+  "appId": "com.georgimy.electron-template",
+  "files": [
+    "dist-electron",
+    "dist-react"
+  ],
+  "extraResources": [
+    "dist-electron/electron/preload.cjs"
+  ],
+  "icon": "./templateIcon.png",
+
+  "publish": "onTag",           
+
+  "mac": {
+    "target": "dmg"
+  },
+  "linux": {
+    "target": "AppImage",
+    "category": "Utility"
+  },
+  "win": {
+    "target": [
+      "portable",
+      "msi"
+    ]
+  }
 }
