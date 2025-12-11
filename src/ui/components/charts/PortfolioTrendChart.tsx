@@ -2,14 +2,11 @@
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import type { MonthlyAggregate } from "../../hooks/usePortfolioDashboard";
+import { formatCurrency } from "../../lib/formatters";
+import { useTranslation } from "react-i18next";
 
 const HEIGHT = 280;
 type LinePoint = MonthlyAggregate & { value: number };
-const series = [
-    { key: "income", label: "Revenus", color: "#2563eb" },
-    { key: "expenses", label: "Depenses", color: "#f97316" },
-    { key: "cashflow", label: "Cashflow", color: "#10b981" },
-] as const;
 
 function formatMonth(month: number) {
     return new Date(2000, month - 1, 1).toLocaleString(undefined, { month: "short" });
@@ -19,10 +16,17 @@ function formatMonth(month: number) {
  * Multi-series trend chart for portfolio income/expenses/cashflow.
  */
 export function PortfolioTrendChart({ data }: { data: MonthlyAggregate[] }) {
+    const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement | null>(null);
     const svgRef = useRef<SVGSVGElement | null>(null);
     const tooltipRef = useRef<HTMLDivElement | null>(null);
     const [width, setWidth] = useState(0);
+
+    const series = [
+        { key: "income", label: t("finances.portfolioLegendRevenue"), color: "#2563eb" },
+        { key: "expenses", label: t("finances.portfolioLegendExpenses"), color: "#f97316" },
+        { key: "cashflow", label: t("finances.portfolioLegendCashflow"), color: "#10b981" },
+    ] as const;
 
     useEffect(() => {
         const el = containerRef.current;
@@ -68,7 +72,7 @@ export function PortfolioTrendChart({ data }: { data: MonthlyAggregate[] }) {
                 d3
                     .axisLeft(y)
                     .ticks(5)
-                    .tickFormat((d) => `${Number(d).toLocaleString()}€`)
+                    .tickFormat((d) => formatCurrency(Number(d)))
             )
             .selectAll("text")
             .style("font-size", "11px");
@@ -82,7 +86,7 @@ export function PortfolioTrendChart({ data }: { data: MonthlyAggregate[] }) {
                 .style("left", `${xPos + 12}px`)
                 .style("top", `${yPos - 10}px`)
                 .html(
-                    `<div><strong>${formatMonth(payload.month)}</strong></div><div>${payload.series}</div><div>${payload.value.toLocaleString()} €</div>`
+                    `<div><strong>${formatMonth(payload.month)}</strong></div><div>${payload.series}</div><div>${formatCurrency(payload.value)}</div>`
                 );
         };
         const hideTooltip = () => tooltip.style("opacity", 0);
@@ -143,7 +147,7 @@ export function PortfolioTrendChart({ data }: { data: MonthlyAggregate[] }) {
             });
 
         return () => { svg.selectAll("*").remove(); };
-    }, [data, width]);
+    }, [data, width, series]);
 
     return (
         <div ref={containerRef} className="relative h-[280px] w-full">
