@@ -77,7 +77,6 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
     const incomeState = useIncomes(electronApi, selectedPropertyId, yearFilter === 'all' ? effectiveYear : yearFilter);
     const expenseAmountRef = useRef<HTMLInputElement | null>(null);
     const incomeAmountRef = useRef<HTMLInputElement | null>(null);
-    const [exporting, setExporting] = useState(false);
     const [pendingFocus, setPendingFocus] = useState<"expenses" | "incomes" | null>(null);
 
     // Import dialogs state
@@ -293,19 +292,6 @@ export function FinancesHub({ electronApi, properties, initialPropertyId = null 
                 loading={dashboardLoading}
                 error={dashboardError}
                 onRefresh={refreshAll}
-                onExport={async () => {
-                    if (!electronApi || !selectedPropertyId) return;
-                    setExporting(true);
-                    try {
-                        const exportYear = yearFilter === 'all' ? currentYear : yearFilter;
-                        await electronApi.exportFinanceExcel(selectedPropertyId, exportYear, undefined);
-                    } catch (err) {
-                        console.error(err);
-                    } finally {
-                        setExporting(false);
-                    }
-                }}
-                exporting={exporting}
                 detailMonth={detailMonth}
                 onSelectMonth={(month) => setDetailMonth(month)}
                 onCloseMonth={() => setDetailMonth(null)}
@@ -384,8 +370,6 @@ type DashboardProps = {
     loading: boolean;
     error: string | null;
     onRefresh: () => void;
-    onExport: () => Promise<void> | void;
-    exporting?: boolean;
     detailMonth: number | null;
     onSelectMonth: (month: number) => void;
     onCloseMonth: () => void;
@@ -401,8 +385,6 @@ function FinancialDashboardCard({
     loading,
     error,
     onRefresh,
-    onExport,
-    exporting,
     detailMonth,
     onSelectMonth,
     onCloseMonth,
@@ -433,13 +415,6 @@ function FinancialDashboardCard({
                         className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-white"
                     >
                         {t("finances.refresh")}
-                    </button>
-                    <button
-                        onClick={onExport}
-                        className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-white"
-                        disabled={exporting}
-                    >
-                        {exporting ? t("finances.exporting") : t("finances.exportExcel")}
                     </button>
                 </div>
             </div>
