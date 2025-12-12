@@ -7,7 +7,6 @@
 **A powerful desktop application for real-estate property management**
 
 [![CI & Build](https://github.com/Flotroniks/ContractDesk/actions/workflows/webpack.yml/badge.svg)](https://github.com/Flotroniks/ContractDesk/actions/workflows/webpack.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/github/v/release/Flotroniks/ContractDesk)](https://github.com/Flotroniks/ContractDesk/releases)
 
 </div>
