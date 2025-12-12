@@ -31,6 +31,6 @@ export function getIconPath(): string {
     return path.join(
         app.getAppPath(),
         isDev() ? './' : '../',
-        'templateIcon.png'
+        'contractdesk-icon.png'
     )
 }

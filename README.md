@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![ContractDesk Logo](./templateIcon.png)
+![ContractDesk Logo](./contractdesk-icon.png)
 
 **A powerful desktop application for real-estate property management**
 

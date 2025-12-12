@@ -40,8 +40,8 @@ describe("pathResolver", () => {
 
     it("returns icon path for both envs", () => {
         isDevMock.mockReturnValue(true);
-        expect(getIconPath()).toBe(path.join("/tmp/app", "./", "templateIcon.png"));
+        expect(getIconPath()).toBe(path.join("/tmp/app", "./", "contractdesk-icon.png"));
         isDevMock.mockReturnValue(false);
-        expect(getIconPath()).toBe(path.join("/tmp/app", "../", "templateIcon.png"));
+        expect(getIconPath()).toBe(path.join("/tmp/app", "../", "contractdesk-icon.png"));
     });
 });

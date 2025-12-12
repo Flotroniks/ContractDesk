@@ -1,5 +1,5 @@
 {
-  "appId": "com.georgimy.electron-template",
+  "appId": "com.flotroniks.contractdesk",
   "files": [
     "dist-electron",
     "dist-react"
@@ -14,7 +14,7 @@
   "extraResources": [
     "dist-electron/electron/preload.cjs"
   ],
-  "icon": "./templateIcon.png",
+  "icon": "./contractdesk-icon.png",
 
   "mac": {
     "target": "dmg"
