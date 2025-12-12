@@ -43,7 +43,7 @@ export function DepartmentSelector({
                     const departmentBelongsToRegion = data.some(
                         (d: Department) => d.id === department_id
                     );
-                    if (!departmentBelongsToRegion) {
+                    if (!departmentBelongsToRegion && department_id !== null) {
                         onDepartmentChange(null);
                     }
                 } catch (error) {
@@ -56,9 +56,12 @@ export function DepartmentSelector({
         } else {
             setDepartments([]);
             setShowAddDepartment(false);
-            onDepartmentChange(null);
+            if (department_id !== null) {
+                onDepartmentChange(null);
+            }
         }
-    }, [region_id, electron, onDepartmentChange, department_id]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [region_id, electron, department_id]);
 
     // Guard: renderer opened outside Electron
     if (!electron) {

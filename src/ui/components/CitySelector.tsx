@@ -45,7 +45,7 @@ export function CitySelector({
                     const data = await electron.listCities(region_id, department_id ?? undefined);
                     setCities(data);
                     const cityBelongs = data.some((c: City) => c.id === city_id);
-                    if (!cityBelongs) {
+                    if (!cityBelongs && city_id !== null) {
                         onCityChange(null);
                     }
                 } catch (error) {
@@ -58,9 +58,12 @@ export function CitySelector({
         } else {
             setCities([]);
             setShowAddCity(false);
-            onCityChange(null);
+            if (city_id !== null) {
+                onCityChange(null);
+            }
         }
-    }, [region_id, department_id, electron, onCityChange, city_id]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [region_id, department_id, electron, city_id]);
 
     // Guard: renderer opened outside Electron
     if (!electron) {

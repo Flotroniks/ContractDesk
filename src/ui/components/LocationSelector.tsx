@@ -73,7 +73,7 @@ export function LocationSelector({
                     const data = await electron.listRegions(country_id);
                     setRegions(data);
                     const regionBelongsToCountry = data.some((r: Region) => r.id === region_id);
-                    if (!regionBelongsToCountry) {
+                    if (!regionBelongsToCountry && region_id !== null) {
                         onRegionChange(null);
                         onDepartmentChange?.(null);
                         onCityChange?.(null);
@@ -88,11 +88,14 @@ export function LocationSelector({
         } else {
             setRegions([]);
             setShowAddRegion(false);
-            onRegionChange(null);
-            onDepartmentChange?.(null);
-            onCityChange?.(null);
+            if (region_id !== null) {
+                onRegionChange(null);
+                onDepartmentChange?.(null);
+                onCityChange?.(null);
+            }
         }
-    }, [country_id, electron, onRegionChange, region_id, onDepartmentChange, onCityChange]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [country_id, electron, region_id]);
 
     // Guard: renderer opened outside Electron
     if (!electron) {
